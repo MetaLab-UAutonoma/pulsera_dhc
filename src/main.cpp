@@ -23,32 +23,34 @@ void setup() {
         pinMode(p, OUTPUT);
     }
 
-    Watchdog::instance().setWatch(
-        /* type      */ MEAS_TEMPERATURE,
+    Watchdog& watchdog = Watchdog::instance();
+
+    auto temp_rule = std::make_unique<WatchdogRuleTemp>(
         /* min_val   */ 36.0f,
         /* max_val   */ 38.5f,
-        /* alert_sec */ 300,      // Alerta tras 5 minutos
-        /* hist_items*/ 60,       // 30 mins de historial (1 med c/30s)
-        /* hist_age  */ 3600      // Max 1 hora de antigüedad
+        /* alert_sec */ 300,
+        /* hist_items*/ 60,
+        /* hist_age  */ 3600
     );
+    watchdog.addRule(MEAS_TEMPERATURE,std::move(temp_rule));
 
-    Watchdog::instance().setWatch(
-        /* type      */ MEAS_SPO2,
+    auto spo2_rule = std::make_unique<WatchdogRuleSpO2>(
         /* min_val   */ 92.0f,
         /* max_val   */ 100.0f,
         /* alert_sec */ 120,      // Alerta tras 2 minutos
         /* hist_items*/ 60,
         /* hist_age  */ 3600
     );
+    watchdog.addRule(MEAS_SPO2,std::move(spo2_rule));
 
-    Watchdog::instance().setWatch(
-        /* type      */ MEAS_BPM,
+    auto bpm_rule = std::make_unique<WatchdogRuleBPM>(
         /* min_val   */ 50.0f,
         /* max_val   */ 110.0f,
         /* alert_sec */ 180,      // Alerta tras 3 minutos
         /* hist_items*/ 60,
         /* hist_age  */ 3600
     );
+    watchdog.addRule(MEAS_BPM,std::move(bpm_rule));
 
     logger.log(LOG_INFO, "== Sistema iniciado ==");
 }

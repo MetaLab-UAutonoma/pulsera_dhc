@@ -1,4 +1,4 @@
-// FifoList.hpp
+// MeasurementList.hpp
 #pragma once
 #include <list>
 #include <Arduino.h>
