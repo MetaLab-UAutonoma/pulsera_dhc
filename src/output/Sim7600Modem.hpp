@@ -2,6 +2,7 @@
 #pragma once
 #include <Arduino.h>
 #include "config.hpp"
+#include "config/AppConfig.hpp"
 #include "utils/logger.hpp"
 #include "utils/shared.hpp"
 
@@ -21,7 +22,8 @@ public:
     Sim7600Modem(HardwareSerial& p_serial,
                  int p_rxPin,
                  int p_txPin,
-                 const char* p_telefonoDestino);
+                 const char* p_telefonoDestino,
+                 const ModemConfig& config);
 
     /** Inicializa UART del módem (antes initModem) */
     void init();
@@ -37,6 +39,7 @@ public:
     bool isActive() const;
 
 private:
+    const ModemConfig& config_;
     HardwareSerial& serial_;
     int             rxPin_;
     int             txPin_;

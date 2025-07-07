@@ -1,54 +1,55 @@
 // main.cpp
 #include "main.hpp"
 
+bool a = ConfigManager::instance().loadFromFile("/config/config.json");
+const AppConfig& config = ConfigManager::instance().getConfig();
+
 // ——— Instancias de los módulos (POO) ———
 PulseOximeter pox;                                           // Para PoxSensor
-PoxMax30100Sensor poxSensor(pox);
-TempSensor    tempSensor(PIN_SENSOR_TEMP, 0.0f, 0.0f);
-Sim7600Modem  modem(simSerial, SIM_RX, SIM_TX, telefonoDestino);
-
-// ——— Pines de salida (no encapsulados) ———
-const int outputPins[2] = {32, 33};
+PoxMax30100Sensor poxSensor(pox, config.input.pox_sensor);
+TempSensor    tempSensor(PIN_SENSOR_TEMP, config.input.temp_sensor);
+Sim7600Modem  modem(simSerial, SIM_RX, SIM_TX, config.general.telefono_destino.c_str(), config.output.modem);
 
 void setup() {
     Serial.begin(115200);
-    logger.init("pool.ntp.org", -4 * 3600, 0);
+    ConfigManager::instance().loadFromFile("/config/config.json");
+
+    logger.init(config.ntp.server.c_str(), config.ntp.gmt_offset_sec, config.ntp.daylight_offset_sec);
 
     pinMode(DEBUG_PIN, INPUT);
     Wire.begin();
-
     modem.init();
 
-    for (auto p : outputPins) {
-        pinMode(p, OUTPUT);
-    }
-
     Watchdog& watchdog = Watchdog::instance();
+    const auto& wd_rules_config = config.business.watchdog; // Alias para legibilidad
 
+    // Crear Regla de Temperatura
     auto temp_rule = std::make_unique<WatchdogRuleTemp>(
-        /* min_val   */ 36.0f,
-        /* max_val   */ 38.5f,
-        /* alert_sec */ 300,
-        /* hist_items*/ 60,
-        /* hist_age  */ 3600
+        wd_rules_config.temp_rule.min_val,
+        wd_rules_config.temp_rule.max_val,
+        wd_rules_config.temp_rule.alert_sec,
+        wd_rules_config.temp_rule.hist_items,
+        wd_rules_config.temp_rule.hist_age_sec
     );
-    watchdog.addRule(MEAS_TEMPERATURE,std::move(temp_rule));
+    watchdog.addRule(MEAS_TEMPERATURE, std::move(temp_rule));
 
+    // Crear Regla de SpO2
     auto spo2_rule = std::make_unique<WatchdogRuleSpO2>(
-        /* min_val   */ 92.0f,
-        /* max_val   */ 100.0f,
-        /* alert_sec */ 120,      // Alerta tras 2 minutos
-        /* hist_items*/ 60,
-        /* hist_age  */ 3600
+        wd_rules_config.spo2_rule.min_val,
+        wd_rules_config.spo2_rule.max_val,
+        wd_rules_config.spo2_rule.alert_sec,
+        wd_rules_config.spo2_rule.hist_items,
+        wd_rules_config.spo2_rule.hist_age_sec
     );
-    watchdog.addRule(MEAS_SPO2,std::move(spo2_rule));
+    watchdog.addRule(MEAS_SPO2, std::move(spo2_rule));
 
+    // Crear Regla de BPM
     auto bpm_rule = std::make_unique<WatchdogRuleBPM>(
-        /* min_val   */ 50.0f,
-        /* max_val   */ 110.0f,
-        /* alert_sec */ 180,      // Alerta tras 3 minutos
-        /* hist_items*/ 60,
-        /* hist_age  */ 3600
+        wd_rules_config.bpm_rule.min_val,
+        wd_rules_config.bpm_rule.max_val,
+        wd_rules_config.bpm_rule.alert_sec,
+        wd_rules_config.bpm_rule.hist_items,
+        wd_rules_config.bpm_rule.hist_age_sec
     );
     watchdog.addRule(MEAS_BPM,std::move(bpm_rule));
 
@@ -58,11 +59,9 @@ void setup() {
 void loop() {
     uint32_t now = millis();
 
-    // Mantenimiento de debugMode (queda en main)
     debugMode = (digitalRead(DEBUG_PIN) == HIGH);
     if (debugMode != lastDebugMode) {
-        logger.log(LOG_INFO, ">> %s debug mode",
-                   debugMode ? "ACTIVADO" : "DESACTIVADO");
+        logger.log(LOG_INFO, ">> %s debug mode", debugMode ? "ACTIVADO" : "DESACTIVADO");
         lastDebugMode = debugMode;
     }
 

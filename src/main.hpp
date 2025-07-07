@@ -3,7 +3,7 @@
 #include <memory>
 #include <utility>
 
-
+#include "config/ConfigManager.hpp"
 
 #include "utils/logger.hpp"
 #include "utils/shared.hpp"

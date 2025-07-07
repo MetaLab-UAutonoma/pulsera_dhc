@@ -1,8 +1,9 @@
 // input/sensor_max30100.cpp
 #include "PoxMax30100Sensor.hpp"
 
-PoxMax30100Sensor::PoxMax30100Sensor(PulseOximeter& p_pox)
+PoxMax30100Sensor::PoxMax30100Sensor(PulseOximeter& p_pox, const PoxSensorConfig& config)
   : pox_(p_pox)
+  , config_(config)
   , active_(false)
   , tsPulso_(0)
   , tsWaitingPulso_(0)
@@ -36,7 +37,7 @@ void PoxMax30100Sensor::update(uint32_t p_now) {
     float b = 0.0f, s = 0.0f;
     switch (state_) {
         case State::APAGADO:
-            if (p_now - tsPulso_ >= SEG_A_MS(CICLO_MONITOREO_SEG)) {
+            if (p_now - tsPulso_ >= SEG_A_MS(config_.ciclo_monitoreo_seg)) {
                 logger.log(LOG_DEBUG, "APAGADO→WAITING");
                 init();
                 state_ = State::WAITING;
@@ -44,7 +45,7 @@ void PoxMax30100Sensor::update(uint32_t p_now) {
             break;
 
         case State::WAITING:
-            if (p_now - tsWaitingPulso_ >= WAIT_PULSO_MS) {
+            if (p_now - tsWaitingPulso_ >= SEG_A_MS(config_.timer_estabilizacion_seg)) {
                 logger.log(LOG_DEBUG, "WAITING→LEYENDO");
                 tsLeerPulso_ = p_now;
                 state_       = State::LEYENDO;
@@ -65,7 +66,7 @@ void PoxMax30100Sensor::update(uint32_t p_now) {
                 if (!isnan(s) && s > 0) sumSpo2_ += s;
                 countPulso_++;
             }
-            if (p_now - tsPulso_ >= SEG_A_MS(DURACION_SENSOR_SEG)) {
+            if (p_now - tsPulso_ >= SEG_A_MS(config_.duracion_lectura_seg)) {
                 logger.log(LOG_DEBUG, "LEYENDO→ANALIZANDO");
                 state_ = State::ANALIZANDO;
             }

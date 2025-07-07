@@ -1,8 +1,9 @@
 // input/sensor_temp.cpp
 #include "input/TempSensor.hpp"
 
-TempSensor::TempSensor(int p_pinSensor, float p_tempMin, float p_tempMax)
+TempSensor::TempSensor(int p_pinSensor, const TempSensorConfig& config)
   : pinSensor_(p_pinSensor)
+  , config_(config)
   , active_(false)
   , tsTemp_(0)
   , tsWaitingTemp_(0)
@@ -10,8 +11,6 @@ TempSensor::TempSensor(int p_pinSensor, float p_tempMin, float p_tempMax)
   , sumTemp_(0)
   , countTemp_(0)
   , state_(State::APAGADO)
-  , tempMin_(p_tempMin)
-  , tempMax_(p_tempMax)
   , alertT_(false)
 {}
 
@@ -24,7 +23,7 @@ void TempSensor::update(uint32_t now) {
 
     switch (state_) {
         case State::APAGADO:
-            if (now - tsTemp_ >= SEG_A_MS(CICLO_MONITOREO_SEG)) {
+            if (now - tsTemp_ >= SEG_A_MS(config_.ciclo_monitoreo_seg)) {
                 logger.log(LOG_DEBUG, "APAGADO→WAITING");
                 active_       = true;
                 tsWaitingTemp_= now;
@@ -36,7 +35,7 @@ void TempSensor::update(uint32_t now) {
             break;
 
         case State::WAITING:
-            if (now - tsWaitingTemp_ >= WAIT_TEMP_MS) {
+            if (now - tsWaitingTemp_ >= SEG_A_MS(config_.timer_estabilizacion_seg)) {
                 logger.log(LOG_DEBUG, "WAITING→LEYENDO");
                 tsLeerTemp_ = now;
                 state_      = State::LEYENDO;
@@ -52,7 +51,7 @@ void TempSensor::update(uint32_t now) {
                 sumTemp_ += t;
                 countTemp_++;
             }
-            if (now - tsTemp_ >= SEG_A_MS(DURACION_SENSOR_SEG)) {
+            if (now - tsTemp_ >= SEG_A_MS(config_.duracion_lectura_seg)) {
                 logger.log(LOG_DEBUG, "LEYENDO→ANALIZANDO");
                 state_ = State::ANALIZANDO;
             }

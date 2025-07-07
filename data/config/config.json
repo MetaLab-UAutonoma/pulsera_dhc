@@ -1,0 +1,46 @@
+{
+  "general": {
+    "telefono_destino": "+56912345678"
+  },
+  "ntp": {
+    "server": "cl.pool.ntp.org",
+    "gmt_offset_sec": -14400,
+    "daylight_offset_sec": 0
+  },
+  "input": {
+    "TempSensor": {
+      "ciclo_monitoreo_seg": 30.0,
+      "duracion_lectura_seg": 20.0,
+      "timer_estabilizacion_seg": 0.5
+    },
+    "PoxMax30100Sensor": {
+      "ciclo_monitoreo_seg": 30.0,
+      "duracion_lectura_seg": 20.0,
+      "timer_estabilizacion_seg": 10.0
+    }
+  },
+  "output": {
+    "Sim7600Modem": {
+      "timer_check_seg": 5.0
+    }
+  },
+  "business": {
+    "watchdog": {
+      "check_interval_seg": 5,
+      "rules": {
+        "temp": {
+          "min_val": 36.0, "max_val": 38.5, "alert_sec": 300,
+          "hist_items": 60, "hist_age_sec": 3600
+        },
+        "spo2": {
+          "min_val": 92.0, "max_val": 100.0, "alert_sec": 120,
+          "hist_items": 60, "hist_age_sec": 3600
+        },
+        "bpm": {
+          "min_val": 50.0, "max_val": 110.0, "alert_sec": 180,
+          "hist_items": 60, "hist_age_sec": 3600
+        }
+      }
+    }
+  }
+}

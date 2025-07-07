@@ -1,14 +1,15 @@
-// modem_sim7600.cpp
 #include "Sim7600Modem.hpp"
 
 Sim7600Modem::Sim7600Modem(HardwareSerial& p_serial,
                            int p_rxPin,
                            int p_txPin,
-                           const char* p_telefonoDestino)
+                           const char* p_telefonoDestino,
+                           const ModemConfig& config)
   : serial_(p_serial)
   , rxPin_(p_rxPin)
   , txPin_(p_txPin)
   , telefonoDestino_(p_telefonoDestino)
+  , config_(config)
   , modemActivo_(false)
   , tsModem_(0)
   , tsModemCmd_(0)
@@ -29,7 +30,7 @@ void Sim7600Modem::update(uint32_t p_now) {
     logger.log(LOG_DEBUG, "Modem, estado=%s", stateToString(state_));
     switch (state_) {
         case State::APAGADO:
-            if (p_now - tsModem_ >= CHEQUEO_MODEM_MS) {
+            if (p_now - tsModem_ >= SEG_A_MS(config_.timer_check_seg)) {
                 logger.log(LOG_DEBUG, "Enviando AT");
                 serial_.println("AT");
                 tsModemCmd_ = p_now;
