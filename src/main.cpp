@@ -4,9 +4,7 @@
 // ——— Instancias de los módulos (POO) ———
 PulseOximeter pox;                                           // Para PoxSensor
 PoxMax30100Sensor poxSensor(pox);
-
-TempSensor    tempSensor(PIN_SENSOR_TEMP, 0.0f, 0.0f);       // Umbrales no usados por ahora
-
+TempSensor    tempSensor(PIN_SENSOR_TEMP, 0.0f, 0.0f);
 Sim7600Modem  modem(simSerial, SIM_RX, SIM_TX, telefonoDestino);
 
 // ——— Pines de salida (no encapsulados) ———
@@ -24,6 +22,33 @@ void setup() {
     for (auto p : outputPins) {
         pinMode(p, OUTPUT);
     }
+
+    Watchdog::instance().setWatch(
+        /* type      */ MEAS_TEMPERATURE,
+        /* min_val   */ 36.0f,
+        /* max_val   */ 38.5f,
+        /* alert_sec */ 300,      // Alerta tras 5 minutos
+        /* hist_items*/ 60,       // 30 mins de historial (1 med c/30s)
+        /* hist_age  */ 3600      // Max 1 hora de antigüedad
+    );
+
+    Watchdog::instance().setWatch(
+        /* type      */ MEAS_SPO2,
+        /* min_val   */ 92.0f,
+        /* max_val   */ 100.0f,
+        /* alert_sec */ 120,      // Alerta tras 2 minutos
+        /* hist_items*/ 60,
+        /* hist_age  */ 3600
+    );
+
+    Watchdog::instance().setWatch(
+        /* type      */ MEAS_BPM,
+        /* min_val   */ 50.0f,
+        /* max_val   */ 110.0f,
+        /* alert_sec */ 180,      // Alerta tras 3 minutos
+        /* hist_items*/ 60,
+        /* hist_age  */ 3600
+    );
 
     logger.log(LOG_INFO, "== Sistema iniciado ==");
 }
@@ -44,5 +69,5 @@ void loop() {
     tempSensor.update(now);
     modem.update(now);
 
-    // (Aquí podrías añadir lógica de salidas binarias si la encapsulas luego)
+    Watchdog::instance().update(now);
 }

@@ -22,46 +22,30 @@ MeasurementManager& MeasurementManager::instance() {
     return mgr;
 }
 
-void MeasurementManager::setRange(MeasurementType type, float lo, float hi) {
-    auto& e = entries_[type];
-    e.min   = lo;
-    e.max   = hi;
-    e.value = NAN;   // sin valor inicial
-    e.ts    = "";
-    logger.log(LOG_INFO,
-      "Rango %d configurado [%.2f .. %.2f]", type, lo, hi);
+void MeasurementManager::configure(MeasurementType type, size_t max_items, uint32_t max_age_sec) {
+    // Inserta o reemplaza la configuración para este tipo.
+    entries_.erase(type);
+    entries_.emplace(std::piecewise_construct,
+                     std::forward_as_tuple(type),
+                     std::forward_as_tuple(max_items, max_age_sec));
+    logger.log(LOG_INFO, "Manager para '%s' configurado: max_items=%u, max_age=%usec",
+        measurementTypeToString(type), max_items, max_age_sec);
 }
 
-void MeasurementManager::addMeasurement(MeasurementType type,
-                                        const String& ts,
-                                        float val) {
-    auto &e = entries_[type];
-    e.ts    = ts;
-    e.value = val;
-    logger.log(LOG_DEBUG,
-      "addMeasurement(%d): [%s] = %.2f",
-      type, ts.c_str(), val);
-}
-
-void MeasurementManager::validateAll(bool modemActivo) {
-    for (auto type : kAllTypes) {
-        auto it = entries_.find(type);
-        if (it == entries_.end()) continue;
-        const auto &e = it->second;
-        if (isnan(e.value)) {
-            logger.log(LOG_WARN,
-                "No hay lecturas para tipo %d", type);
-            continue;
-        }
-        const char* name = measurementTypeToString(type);
-
-        static std::map<MeasurementType,bool> alerted;
-
-        // TODO verificarYAlertar
+void MeasurementManager::addMeasurement(MeasurementType type, float val) {
+    auto it = entries_.find(type);
+    if (it != entries_.end()) {
+        it->second.add(val);
+        logger.log(LOG_DEBUG, "addMeasurement(%s): %.2f", measurementTypeToString(type), val);
+    } else {
+        logger.log(LOG_WARN, "Manager para '%s' no configurado. Medición descartada.", measurementTypeToString(type));
     }
 }
 
-const std::map<MeasurementType, MeasurementEntry>&
-MeasurementManager::data() const {
-    return entries_;
+const MeasurementList* MeasurementManager::getHistory(MeasurementType type) const {
+    auto it = entries_.find(type);
+    if (it != entries_.end()) {
+        return &it->second;
+    }
+    return nullptr;
 }

@@ -9,6 +9,7 @@
 /// =======================================================================
 class Shared {
 public:
+    static String tsToString(time_t ts);
 };
 
 /// Instancia global para acceder en cualquier parte con `shared.*`

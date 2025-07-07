@@ -5,6 +5,7 @@
 #include <map>
 #include "utils/shared.hpp"
 #include "utils/logger.hpp"
+#include "business/MeasurementList.hpp"
 
 /// Tipos de medición
 enum MeasurementType {
@@ -17,29 +18,20 @@ const char* measurementTypeToString(MeasurementType t);
 
 /// Almacena la última medición y sus límites
 struct MeasurementEntry {
-    String ts;      // timestamp "YYYY-MM-DD hh:mm:ss-mmm"
+    time_t ts;      // timestamp 
     float  value;   // último valor medido
-    float  min;     // umbral mínimo
-    float  max;     // umbral máximo
 };
 
 /// Singleton que gestiona todas las mediciones y validaciones
 class MeasurementManager {
 public:
-    /// Devuelve la instancia única
+    /// singleton
     static MeasurementManager& instance();
 
-    /// Establece los rangos para cada tipo antes de empezar
-    void setRange(MeasurementType type, float lo, float hi);
+    void addMeasurement(MeasurementType type, float val);
+    const MeasurementList* getHistory(MeasurementType type) const;
+    void configure(MeasurementType type, size_t max_items, uint32_t max_age_sec);
 
-    /// Agrega o actualiza la última medición (timestamp + valor)
-    void addMeasurement(MeasurementType type, const String& ts, float val);
-
-    /// Recorre todas las mediciones y alerta si fuera de rango
-    void validateAll(bool modemActivo);
-
-    /// Opcional: acceder a las entradas para exportar JSON, etc.
-    const std::map<MeasurementType, MeasurementEntry>& data() const;
 
 private:
     MeasurementManager() = default;
@@ -51,5 +43,5 @@ private:
     MeasurementManager(MeasurementManager&&) = delete;
     MeasurementManager& operator=(MeasurementManager&&) = delete;
 
-    std::map<MeasurementType, MeasurementEntry> entries_;
+    std::map<MeasurementType, MeasurementList> entries_;
 };
