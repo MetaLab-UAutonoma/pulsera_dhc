@@ -8,7 +8,7 @@ Sim7600Modem::Sim7600Modem(HardwareSerial& p_serial,
   : serial_(p_serial)
   , rxPin_(p_rxPin)
   , txPin_(p_txPin)
-  , telefonoDestino_(p_telefonoDestino)
+  , telefonoDestino_(p_telefonoDestino) 
   , config_(config)
   , modemActivo_(false)
   , tsModem_(0)
@@ -67,4 +67,25 @@ const char* Sim7600Modem::stateToString(State p_state) {
         case State::ANALIZAR_RESP:return "ANALIZAR_RESP";
     }
     return "UNKNOWN";
+}
+void Sim7600Modem::enviarAlerta(const String& mensaje) {
+    if (!modemActivo_) {
+        logger.log(LOG_WARN, "No se puede enviar alerta: módem inactivo.");
+        return;
+    }
+
+    logger.log(LOG_INFO, "Enviando alerta: %s", mensaje.c_str());
+
+    serial_.println("AT+CMGF=1");  // Modo texto
+    delay(100);
+
+    serial_.print("AT+CMGS=\"");
+    serial_.print(telefonoDestino_);
+    serial_.println("\"");
+    delay(100);
+
+    serial_.print(mensaje);
+    delay(100);
+
+    serial_.write(26);  // Ctrl+Z para enviar
 }

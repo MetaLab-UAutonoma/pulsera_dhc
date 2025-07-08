@@ -6,6 +6,7 @@
 #include "utils/logger.hpp"
 #include "utils/shared.hpp"
 
+
 /// =======================================================================
 /// Category: Modem SIM7600 (POO)
 /// =======================================================================
@@ -38,7 +39,8 @@ public:
     /** ¿El módem está activo? */
     bool isActive() const;
 
-private:
+void enviarAlerta(const String& mensaje);
+    private:
     const ModemConfig& config_;
     HardwareSerial& serial_;
     int             rxPin_;

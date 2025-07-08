@@ -8,7 +8,7 @@ public:
                      size_t history_items, uint32_t history_age_sec);
     void validate() override;
     void configureManager(MeasurementManager& manager) override;
-
+    
 private:
     MeasurementManager& manager_;
     float    min_threshold_;
