@@ -13,8 +13,11 @@ Este sistema monitorea signos vitales de personas en situación de calle (temper
 ## Hardware
 
 Microcontrolador: ESP32
+
 Sensor de Pulso/SpO2: MAX30100
+
 Sensor de Temperatura: Transistor.
+
 Módem Celular: SIM7600
 
 ## Mapa del Proyecto.
