@@ -22,19 +22,33 @@ Módem Celular: SIM7600
 El código fuente en la carpeta `src/` está organizado por responsabilidades. Así sabrás dónde buscar y dónde crear nuevos archivos.
 
 data
-├── 📁 config/           
+
+├── 📁 config/       
+
 │   └── 📜 config.json   -> Variables configurables.
+
 │
+
 src/
+
 ├── 📁 business/         -> El cerebro y la lógica del sistema.
+
 │   └── 📁 rules/        -> Las reglas de negocio individuales para cada signo vital.
+
 │
+
 ├── 📁 input/            -> Clases para leer datos de los sensores.
+
 │
+
 ├── 📁 output/           -> Clases para interactuar con el exterior (ej. Módem).
+
 │
+
 ├── 📁 utils/            -> Herramientas compartidas (Logger, listas, etc.).
+
 │
+
 └── 📜 main.cpp          -> El punto de entrada. Aquí se "arma" y configura todo.
 
 ---
