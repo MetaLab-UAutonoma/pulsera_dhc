@@ -1,6 +1,5 @@
 #pragma once
 #include <Arduino.h>
-#include "config.hpp"
 #include "config/AppConfig.hpp"
 #include "MAX30100_PulseOximeter.h"
 #include "utils/logger.hpp"

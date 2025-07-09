@@ -1,6 +1,6 @@
 // input/Sensor.hpp
 #pragma once
-#include "config.hpp"
+#include "config/ConfigManager.hpp"
 
 /// =======================================================================
 /// Category: Sensor base class

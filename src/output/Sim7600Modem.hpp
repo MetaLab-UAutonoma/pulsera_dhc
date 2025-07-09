@@ -1,7 +1,6 @@
 // modem_sim7600.hpp
 #pragma once
 #include <Arduino.h>
-#include "config.hpp"
 #include "config/AppConfig.hpp"
 #include "utils/logger.hpp"
 #include "utils/shared.hpp"

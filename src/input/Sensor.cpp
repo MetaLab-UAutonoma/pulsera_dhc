@@ -1,6 +1,6 @@
 // input/Sensor.cpp
 #include "input/Sensor.hpp"
-#include "config.hpp"
+#include "config/ConfigManager.hpp"
 
 /// =======================================================================
 /// Category: Sensor base implementation

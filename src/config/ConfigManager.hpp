@@ -1,21 +1,23 @@
 #pragma once
 
 #include "config/AppConfig.hpp"
-#include "SPIFFS.h"
+
+
 
 class ConfigManager {
-public:
+
+    public:
     static ConfigManager& instance();
 
-    bool loadFromFile(const char* filepath);
+    bool cargarConfiguracion();  // carga config en memoria (sin JSON)
     const AppConfig& getConfig() const;
+   
 
 private:
-    ConfigManager(); // Constructor privado
+    ConfigManager();
     ~ConfigManager() = default;
     ConfigManager(const ConfigManager&) = delete;
     ConfigManager& operator=(const ConfigManager&) = delete;
 
-    AppConfig config_; // Almacena la configuración cargada
-    bool loaded_ = false;
+    AppConfig config_; // Aquí se guarda la configuración real
 };

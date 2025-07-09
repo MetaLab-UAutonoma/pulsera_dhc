@@ -1,5 +1,6 @@
 // input/sensor_max30100.cpp
 #include "PoxMax30100Sensor.hpp"
+#define SEG_A_MS(x) ((uint32_t)((x) * 1000))
 
 PoxMax30100Sensor::PoxMax30100Sensor(PulseOximeter& p_pox, const PoxSensorConfig& config)
   : pox_(p_pox)

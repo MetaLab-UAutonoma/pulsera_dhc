@@ -8,7 +8,10 @@ WatchdogRuleTemp::WatchdogRuleTemp(float min_val, float max_val, uint32_t alert_
       max_threshold_(max_val),
       alert_duration_sec_(alert_duration_sec),
       history_items_(history_items),
-      history_age_sec_(history_age_sec) {}
+      history_age_sec_(history_age_sec),
+      alert_condition_since_(0),
+      is_alert_active_(false)
+{}
 
 void WatchdogRuleTemp::configureManager(MeasurementManager& manager) {
     manager.configure(MEAS_TEMPERATURE, history_items_, history_age_sec_);
@@ -24,15 +27,17 @@ void WatchdogRuleTemp::validate() {
     const bool is_out_of_bounds = (last.value < min_threshold_ || last.value > max_threshold_);
     const char* name = "Temp"; // Nombre para los logs
 
+    uint32_t nowSec = millis() / 1000;
+
     if (is_out_of_bounds) {
         if (alert_condition_since_ == 0) {
-            alert_condition_since_ = last.timestamp;
+            alert_condition_since_ = nowSec;
             logger.log(LOG_INFO, "Watchdog [%s]: Condición iniciada (valor: %.1f)", name, last.value);
         } else {
-            if (!is_alert_active_ && (time(nullptr) - alert_condition_since_) >= alert_duration_sec_) {
+            if (!is_alert_active_ && (nowSec - alert_condition_since_) >= alert_duration_sec_) {
                 is_alert_active_ = true;
                 logger.log(LOG_WARN, "¡ALERTA [%s]! Valor fuera de rango por más de %u seg.", name, alert_duration_sec_);
-                // Lógica de enviar SMS aquí...
+                // Aquí puedes agregar la lógica para enviar SMS o alertas
             }
         }
     } else {

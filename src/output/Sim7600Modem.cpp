@@ -1,5 +1,8 @@
 #include "Sim7600Modem.hpp"
 
+#define SEG_A_MS(seg) ((uint32_t)((seg) * 1000))
+
+
 Sim7600Modem::Sim7600Modem(HardwareSerial& p_serial,
                            int p_rxPin,
                            int p_txPin,
@@ -88,4 +91,38 @@ void Sim7600Modem::enviarAlerta(const String& mensaje) {
     delay(100);
 
     serial_.write(26);  // Ctrl+Z para enviar
+     if (!modemActivo_) {
+        logger.log(LOG_WARN, "No se puede enviar alerta: módem inactivo.");
+        return;
+    }
+
+    logger.log(LOG_INFO, "Enviando alerta: %s", mensaje.c_str());
+
+    serial_.println("AT+CMGF=1");  // Modo texto
+    delay(200);
+    while (serial_.available()) {
+        String resp = serial_.readStringUntil('\n');
+        logger.log(LOG_DEBUG, "RESP: %s", resp.c_str());
+    }
+
+    serial_.print("AT+CMGS=\"");
+    serial_.print(telefonoDestino_);
+    serial_.println("\"");
+    delay(200);
+    while (serial_.available()) {
+        String resp = serial_.readStringUntil('\n');
+        logger.log(LOG_DEBUG, "RESP: %s", resp.c_str());
+    }
+
+    serial_.print(mensaje);
+    delay(200);
+
+    serial_.write(26);  // Ctrl+Z para enviar
+    delay(5000);        // Esperar respuesta del envío
+
+    while (serial_.available()) {
+        String resp = serial_.readStringUntil('\n');
+        logger.log(LOG_INFO, "RESP: %s", resp.c_str());
+    }
 }
+

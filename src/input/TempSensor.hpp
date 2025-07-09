@@ -1,7 +1,7 @@
 // input/sensor_temp.hpp
 #pragma once
 #include <Arduino.h>
-#include "config.hpp"
+#include "config/ConfigManager.hpp"
 #include "config/AppConfig.hpp" // Para tener la struct
 #include "utils/logger.hpp"
 #include "input/Sensor.hpp"

@@ -1,5 +1,7 @@
 // input/sensor_temp.cpp
 #include "input/TempSensor.hpp"
+#define SEG_A_MS(x) ((uint32_t)((x) * 1000))
+
 
 TempSensor::TempSensor(int p_pinSensor, const TempSensorConfig& config)
   : pinSensor_(p_pinSensor)

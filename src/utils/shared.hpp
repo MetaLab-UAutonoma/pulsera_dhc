@@ -1,8 +1,8 @@
 // shared.hpp
 #pragma once
 #include <Arduino.h>
-#include "config.hpp"
 #include "utils/logger.hpp"
+#define SEG_A_MS(x) ((uint32_t)((x) * 1000))
 
 /// =======================================================================
 /// Category: Shared singleton
