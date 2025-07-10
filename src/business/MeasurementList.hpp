@@ -5,16 +5,19 @@
 
 struct TimedValue {
     time_t timestamp;
-    float  value;
+    float value;
+
+    // ✅ Constructor necesario para evitar error al usar push_back({..., ...})
+    TimedValue(time_t t, float v) : timestamp(t), value(v) {}
 };
 
 class MeasurementList {
 public:
     MeasurementList(size_t max_size, uint32_t max_age_seconds)
-      : maxSize_(max_size), maxAgeSeconds_(max_age_seconds) {}
-
+        : maxSize_(max_size), maxAgeSeconds_(max_age_seconds) {}
 
     void add(float val);
+
     const std::list<TimedValue>& getData() const {
         return data_;
     }
@@ -23,6 +26,6 @@ private:
     void cleanOldData();
 
     std::list<TimedValue> data_;
-    size_t   maxSize_;
+    size_t maxSize_;
     uint32_t maxAgeSeconds_;
 };

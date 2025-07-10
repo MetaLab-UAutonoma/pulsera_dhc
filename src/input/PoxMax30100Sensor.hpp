@@ -5,6 +5,7 @@
 #include "utils/logger.hpp"
 #include "input/Sensor.hpp"
 
+
 class PoxMax30100Sensor : public Sensor {
 public:
     explicit PoxMax30100Sensor(PulseOximeter& p_pox, const PoxSensorConfig& config);

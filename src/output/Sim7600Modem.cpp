@@ -79,50 +79,113 @@ void Sim7600Modem::enviarAlerta(const String& mensaje) {
 
     logger.log(LOG_INFO, "Enviando alerta: %s", mensaje.c_str());
 
-    serial_.println("AT+CMGF=1");  // Modo texto
-    delay(100);
+    // Limpiar buffer antes de enviar comando
+    while (serial_.available()) serial_.read();
 
+//prueba
+
+// === Iniciar chequeos de estado ===
+logger.log(LOG_DEBUG, "Chequeando estado de la SIM con AT+CPIN?");
+serial_.println("AT+CPIN?");
+delay(500);
+while (serial_.available()) {
+    String resp = serial_.readStringUntil('\n');
+    logger.log(LOG_DEBUG, "RESP (CPIN): %s", resp.c_str());
+}
+
+logger.log(LOG_DEBUG, "Chequeando intensidad de señal con AT+CSQ");
+serial_.println("AT+CSQ");
+delay(500);
+while (serial_.available()) {
+    String resp = serial_.readStringUntil('\n');
+    logger.log(LOG_DEBUG, "RESP (CSQ): %s", resp.c_str());
+}
+
+logger.log(LOG_DEBUG, "Chequeando registro en red con AT+CREG?");
+serial_.println("AT+CREG?");
+delay(500);
+while (serial_.available()) {
+    String resp = serial_.readStringUntil('\n');
+    logger.log(LOG_DEBUG, "RESP (CREG): %s", resp.c_str());
+}
+
+logger.log(LOG_DEBUG, "Configurando charset con AT+CSCS=\"GSM\"");
+serial_.println("AT+CSCS=\"GSM\"");
+delay(500);
+while (serial_.available()) {
+    String resp = serial_.readStringUntil('\n');
+    logger.log(LOG_DEBUG, "RESP (CSCS): %s", resp.c_str());
+}
+
+logger.log(LOG_DEBUG, "Poniendo en modo texto con AT+CMGF=1");
+serial_.println("AT+CMGF=1");
+delay(500);
+while (serial_.available()) {
+    String resp = serial_.readStringUntil('\n');
+    logger.log(LOG_DEBUG, "RESP (CMGF): %s", resp.c_str());
+}
+
+
+
+    // Poner módem en modo texto
+    serial_.println("AT+CMGF=1");
+    delay(1000);
+    while (serial_.available()) {
+        String resp = serial_.readStringUntil('\n');
+        logger.log(LOG_DEBUG, "RESP (CMGF): %s", resp.c_str());
+    }
+
+    // Limpiar buffer antes de nuevo comando
+    while (serial_.available()) serial_.read();
+
+    // Comando para enviar SMS
     serial_.print("AT+CMGS=\"");
     serial_.print(telefonoDestino_);
     serial_.println("\"");
-    delay(100);
 
-    serial_.print(mensaje);
-    delay(100);
+    // Esperar prompt '>'
+    uint32_t start = millis();
+    bool promptReceived = false;
+    while (millis() - start < 5000) {
+        if (serial_.available()) {
+            String resp = serial_.readStringUntil('\n');
+            logger.log(LOG_DEBUG, "RESP (CMGS): %s", resp.c_str());
+            if (resp.indexOf('>') != -1) {
+                promptReceived = true;
+                break;
+            }
+        }
+        delay(10);
+    }
 
-    serial_.write(26);  // Ctrl+Z para enviar
-     if (!modemActivo_) {
-        logger.log(LOG_WARN, "No se puede enviar alerta: módem inactivo.");
+    if (!promptReceived) {
+        logger.log(LOG_WARN, "No se recibió prompt '>' para enviar mensaje");
         return;
     }
 
-    logger.log(LOG_INFO, "Enviando alerta: %s", mensaje.c_str());
-
-    serial_.println("AT+CMGF=1");  // Modo texto
-    delay(200);
-    while (serial_.available()) {
-        String resp = serial_.readStringUntil('\n');
-        logger.log(LOG_DEBUG, "RESP: %s", resp.c_str());
-    }
-
-    serial_.print("AT+CMGS=\"");
-    serial_.print(telefonoDestino_);
-    serial_.println("\"");
-    delay(200);
-    while (serial_.available()) {
-        String resp = serial_.readStringUntil('\n');
-        logger.log(LOG_DEBUG, "RESP: %s", resp.c_str());
-    }
-
+    // Enviar mensaje
     serial_.print(mensaje);
-    delay(200);
 
-    serial_.write(26);  // Ctrl+Z para enviar
-    delay(5000);        // Esperar respuesta del envío
+    // Ctrl+Z para terminar
+    serial_.write(26);
 
-    while (serial_.available()) {
-        String resp = serial_.readStringUntil('\n');
-        logger.log(LOG_INFO, "RESP: %s", resp.c_str());
+    // Esperar respuesta final
+    start = millis();
+    while (millis() - start < 10000) {
+        if (serial_.available()) {
+            String resp = serial_.readStringUntil('\n');
+            logger.log(LOG_INFO, "RESP: %s", resp.c_str());
+
+            if (resp.indexOf("OK") != -1) {
+                logger.log(LOG_INFO, "Mensaje enviado correctamente");
+                serial_.println("mensaje enviado");
+                break;
+            }
+            if (resp.indexOf("ERROR") != -1) {
+                logger.log(LOG_WARN, "Error al enviar mensaje: %s", resp.c_str());
+                break;
+            }
+        }
+        delay(10);
     }
 }
-

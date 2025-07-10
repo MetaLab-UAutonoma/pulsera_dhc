@@ -27,8 +27,8 @@ std::unique_ptr<TempSensor> tempSensor;
 std::unique_ptr<Sim7600Modem> modem;
 
 void connectWiFi() {
-    const char* ssid = "TU_SSID";
-    const char* password = "TU_PASSWORD";
+    const char* ssid = "Yo";
+    const char* password = "12345678";
 
     WiFi.begin(ssid, password);
     Serial.print("Conectando a WiFi");
