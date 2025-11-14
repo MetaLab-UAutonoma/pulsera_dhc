@@ -6,6 +6,7 @@
 #define SIM_TX          17
 #define SIM_RX          16
 #define DEBUG_PIN       25
+#define PIN_BATTERY_ADC 35
 
 extern HardwareSerial simSerial; 
 

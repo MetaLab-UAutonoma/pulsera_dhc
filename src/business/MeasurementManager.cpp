@@ -6,6 +6,8 @@ const char* measurementTypeToString(MeasurementType t) {
         case MEAS_TEMPERATURE: return "Temp";
         case MEAS_SPO2:        return "SpO2";
         case MEAS_BPM:         return "BPM";
+        case MEAS_BATTERY_PERCENT:  return "Battery %";
+        case MEAS_BATTERY_VOLTAGE:  return "Battery V";
         default:               return "Unknown";
     }
 }
@@ -14,7 +16,9 @@ const char* measurementTypeToString(MeasurementType t) {
 static const MeasurementType kAllTypes[] = {
     MEAS_TEMPERATURE,
     MEAS_SPO2,
-    MEAS_BPM
+    MEAS_BPM,
+    MEAS_BATTERY_PERCENT,   
+    MEAS_BATTERY_VOLTAGE,   
 };
 
 MeasurementManager& MeasurementManager::instance() {

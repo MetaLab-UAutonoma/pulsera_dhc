@@ -9,6 +9,9 @@ PulseOximeter pox;                                           // Para PoxSensor
 PoxMax30100Sensor poxSensor(pox, config.input.pox_sensor);
 TempSensor    tempSensor(PIN_SENSOR_TEMP, config.input.temp_sensor);
 Sim7600Modem  modem(simSerial, SIM_RX, SIM_TX, config.general.telefono_destino.c_str(), config.output.modem);
+BatterySensor batterySensor(PIN_BATTERY_ADC);
+BatterySensorAdapter batteryInput(batterySensor);
+
 
 void setup() {
     Serial.begin(115200);
@@ -43,6 +46,16 @@ void setup() {
     );
     watchdog.addRule(MEAS_SPO2, std::move(spo2_rule));
 
+     auto battery_rule = std::make_unique<WatchdogRuleBattery>(
+        wd_rules_config.battery_rule.min_val,
+        wd_rules_config.battery_rule.max_val,
+        wd_rules_config.battery_rule.alert_sec,
+        wd_rules_config.battery_rule.hist_items,
+        wd_rules_config.battery_rule.hist_age_sec
+    );
+    watchdog.addRule(MEAS_BATTERY_PERCENT, std::move(battery_rule));
+
+
     // Crear Regla de BPM
     auto bpm_rule = std::make_unique<WatchdogRuleBPM>(
         wd_rules_config.bpm_rule.min_val,
@@ -69,6 +82,7 @@ void loop() {
     poxSensor.update(now);
     tempSensor.update(now);
     modem.update(now);
+    batteryInput.update(now);
 
     Watchdog::instance().update(now);
 }

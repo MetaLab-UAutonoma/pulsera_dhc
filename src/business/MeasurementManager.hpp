@@ -11,7 +11,9 @@
 enum MeasurementType {
     MEAS_TEMPERATURE,
     MEAS_SPO2,
-    MEAS_BPM
+    MEAS_BPM,
+    MEAS_BATTERY_PERCENT,
+    MEAS_BATTERY_VOLTAGE
 };
 
 const char* measurementTypeToString(MeasurementType t);
@@ -31,6 +33,13 @@ public:
     void addMeasurement(MeasurementType type, float val);
     const MeasurementList* getHistory(MeasurementType type) const;
     void configure(MeasurementType type, size_t max_items, uint32_t max_age_sec);
+
+float getLast(MeasurementType type) const {
+        auto it = entries_.find(type);
+        if (it == entries_.end()) return 0.0f;
+        return it->second.last();
+    }
+
 
 
 private:

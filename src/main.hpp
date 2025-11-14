@@ -13,9 +13,12 @@
 #include "business/rules/WatchdogRuleBPM.hpp"
 #include "business/rules/WatchdogRuleSpO2.hpp"
 #include "business/rules/WatchdogRuleTemp.hpp"
+#include "business/rules/WatchdogRuleBattery.hpp" 
 
 #include "input/PoxMax30100Sensor.hpp"
 #include "input/TempSensor.hpp"
+#include "input/BatteryImput.hpp" 
+
 
 #include "output/Sim7600Modem.hpp"
 namespace std {

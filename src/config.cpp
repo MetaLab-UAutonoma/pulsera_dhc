@@ -1,6 +1,6 @@
 #include "config.hpp"
 
-// ——— Definiciones de los extern ———
+// ——— Definiciones de los extern ——— un cambio
 HardwareSerial simSerial(1);
 const char*    telefonoDestino = "+56912345678";
 
