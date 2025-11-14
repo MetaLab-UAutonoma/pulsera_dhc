@@ -17,10 +17,10 @@
 
 #include "input/PoxMax30100Sensor.hpp"
 #include "input/TempSensor.hpp"
-#include "input/BatteryImput.hpp" 
-
+#include "input/BatterySensor.hpp" 
 
 #include "output/Sim7600Modem.hpp"
+
 namespace std {
     template<typename T, typename... Args>
     std::unique_ptr<T> make_unique(Args&&... args) {

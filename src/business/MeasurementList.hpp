@@ -19,6 +19,8 @@ public:
         return data_;
     }
 
+    TimedValue last();
+
 private:
     void cleanOldData();
 

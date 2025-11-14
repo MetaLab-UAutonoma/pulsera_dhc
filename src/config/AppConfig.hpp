@@ -27,9 +27,16 @@ struct PoxSensorConfig {
     float timer_estabilizacion_seg;
 };
 
+struct BatterySensorConfig {
+    float ciclo_monitoreo_seg;
+    float duracion_lectura_seg;
+    float timer_estabilizacion_seg;
+};
+
 struct InputConfig {
     TempSensorConfig temp_sensor;
     PoxSensorConfig pox_sensor;
+    BatterySensorConfig bat_sensor;
 };
 
 // --- OUTPUT ---
@@ -54,6 +61,7 @@ struct WatchdogConfig {
     RuleConfig temp_rule;
     RuleConfig spo2_rule;
     RuleConfig bpm_rule;
+    RuleConfig battery_rule;
 };
 
 struct BusinessConfig {

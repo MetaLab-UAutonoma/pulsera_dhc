@@ -1,6 +1,11 @@
 #pragma once
-#include "IMessageSender.hpp"
 #include "../Sim7600Modem.hpp"
+#include <Arduino.h>
+#include <string>
+
+#include "business/MeasurementManager.hpp"
+#include "output/senders/IMessageSender.hpp"
+#include "output/AlertMessageBuilder.hpp"
 
 class SmsSender : public IMessageSender {
 public:

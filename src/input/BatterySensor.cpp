@@ -1,7 +1,16 @@
 #include "BatterySensor.hpp"
 
-BatterySensor::BatterySensor(int adcPin, float r1, float r2)
-    : _adcPin(adcPin), _r1(r1), _r2(r2) {}
+BatterySensor::BatterySensor(int adcPin, const BatterySensorConfig& config)
+    : _adcPin(adcPin), 
+    _r1(0), 
+    _r2(0), 
+    config_(config),
+    active_(false),
+    tsBat_(0),
+    tsWaitingBat_(0),
+    tsLeerBat_(0),
+    state_(State::APAGADO)
+   {}
 
 void BatterySensor::begin() {
     analogReadResolution(12); // ADC del ESP32 (0–4095)
@@ -44,4 +53,48 @@ int BatterySensor::readPercentage() {
     else if (v >= 3.55f) return 20;
     else if (v >= 3.40f) return 10;
     else                 return 5;
+}
+
+
+void BatterySensor::init() {
+    // idéntico a initSensorPox(...)
+    if (true) {
+    } 
+    else {
+    }
+}
+
+void BatterySensor::update(uint32_t p_now) {
+    logger.log(LOG_DEBUG, "Bat, estado=%s", Sensor::stateToString(state_));
+
+    float b = 0.0f, s = 0.0f;
+    switch (state_) {
+        case State::APAGADO:
+            if (p_now - tsBat_ >= SEG_A_MS(config_.ciclo_monitoreo_seg)) {
+                logger.log(LOG_DEBUG, "APAGADO→WAITING");
+                init();
+                state_ = State::WAITING;
+            }
+            break;
+
+        case State::WAITING:
+            if (p_now - tsWaitingBat_ >= SEG_A_MS(config_.timer_estabilizacion_seg)) {
+                logger.log(LOG_DEBUG, "WAITING→LEYENDO");
+                state_       = State::LEYENDO;
+            }
+            break;
+
+        case State::LEYENDO:
+            if (active_) {
+            }
+            if (p_now - tsBat_ >= SEG_A_MS(config_.duracion_lectura_seg)) {
+                logger.log(LOG_DEBUG, "LEYENDO→ANALIZANDO");
+                state_ = State::ANALIZANDO;
+            }
+            break;
+
+        case State::ANALIZANDO:
+            state_   = State::APAGADO;
+            break;
+    }
 }

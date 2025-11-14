@@ -1,8 +1,10 @@
+#include "AlertMessageBuilder.hpp"
+
 String AlertMessageBuilder::buildSMS(const MeasurementManager& mm) {
-    float t = mm.getLast("temperature");
-    float bpm = mm.getLast("bpm");
-    float spo2 = mm.getLast("spo2");
-    float bat = mm.getLast("battery_percent");
+    float t = mm.getLast(MeasurementType::MEAS_TEMPERATURE);
+    float bpm = mm.getLast(MeasurementType::MEAS_BPM);
+    float spo2 = mm.getLast(MeasurementType::MEAS_SPO2);
+    float bat = mm.getLast(MeasurementType::MEAS_BATTERY_PERCENT);
 
     String msg = "TEMP: "; msg += t;
     msg += "\nBPM: "; msg += bpm;

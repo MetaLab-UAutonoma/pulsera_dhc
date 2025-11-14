@@ -32,7 +32,6 @@ void WatchdogRuleTemp::validate() {
             if (!is_alert_active_ && (time(nullptr) - alert_condition_since_) >= alert_duration_sec_) {
                 is_alert_active_ = true;
                 logger.log(LOG_WARN, "¡ALERTA [%s]! Valor fuera de rango por más de %u seg.", name, alert_duration_sec_);
-                // Lógica de enviar SMS aquí...
             }
         }
     } else {

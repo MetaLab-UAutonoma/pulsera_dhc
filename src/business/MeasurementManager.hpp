@@ -37,7 +37,7 @@ public:
 float getLast(MeasurementType type) const {
         auto it = entries_.find(type);
         if (it == entries_.end()) return 0.0f;
-        return it->second.last();
+        return 0;// it->second.last().value;
     }
 
 

@@ -15,3 +15,7 @@ void MeasurementList::cleanOldData() {
         return (now - tv.timestamp) > maxAgeSeconds_;
     });
 }
+
+TimedValue MeasurementList::last(){
+    return data_.back();
+}

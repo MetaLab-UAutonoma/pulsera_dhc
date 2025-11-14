@@ -6,11 +6,13 @@ const AppConfig& config = ConfigManager::instance().getConfig();
 
 // ——— Instancias de los módulos (POO) ———
 PulseOximeter pox;                                           // Para PoxSensor
+
 PoxMax30100Sensor poxSensor(pox, config.input.pox_sensor);
 TempSensor    tempSensor(PIN_SENSOR_TEMP, config.input.temp_sensor);
+BatterySensor batterySensor(PIN_BATTERY_ADC, config.input.bat_sensor);
+
 Sim7600Modem  modem(simSerial, SIM_RX, SIM_TX, config.general.telefono_destino.c_str(), config.output.modem);
-BatterySensor batterySensor(PIN_BATTERY_ADC);
-BatterySensorAdapter batteryInput(batterySensor);
+//BatterySensorAdapter batteryInput(batterySensor);
 
 
 void setup() {
@@ -81,8 +83,9 @@ void loop() {
     // Delego la lógica a los módulos POO
     poxSensor.update(now);
     tempSensor.update(now);
+    batterySensor.update(now);
+    
     modem.update(now);
-    batteryInput.update(now);
 
     Watchdog::instance().update(now);
 }
