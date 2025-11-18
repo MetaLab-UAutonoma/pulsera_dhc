@@ -1,8 +1,8 @@
 #pragma once
 
-#include "business/rules/IWatchdogRule.hpp"
+#include "business/rules/ThresholdWatchdogRule.hpp"
 
-class WatchdogRuleTemp : public IWatchdogRule {
+class WatchdogRuleTemp : public ThresholdWatchdogRule {
 public:
     /**
      * Constructor para la regla de temperatura.
@@ -15,7 +15,7 @@ public:
     WatchdogRuleTemp(float min_val, float max_val, uint32_t alert_duration_sec,
                      size_t history_items, uint32_t history_age_sec);
 
-    void validate() override;
+/**    void validate() override;
     void configureManager(MeasurementManager& manager) override;
 
 private:
@@ -32,4 +32,5 @@ private:
     // Estado interno
     bool   is_alert_active_ = false;
     time_t alert_condition_since_ = 0;
+    */
 };
