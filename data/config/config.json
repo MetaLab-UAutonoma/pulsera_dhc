@@ -22,6 +22,10 @@
   "output": {
     "Sim7600Modem": {
       "timer_check_seg": 5.0
+    },
+    "SD": {
+      "enabled": true,
+      "cs_pin": 5
     }
   },
   "business": {

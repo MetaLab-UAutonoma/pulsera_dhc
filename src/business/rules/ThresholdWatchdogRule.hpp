@@ -22,7 +22,6 @@ public:
                           float min_val, float max_val, uint32_t alert_duration_sec,
                           size_t history_items, uint32_t history_age_sec);
     
-    // Implementación común de la interfaz IWatchdogRule
     void validate() override;
     void configureManager(MeasurementManager& manager) override;
 

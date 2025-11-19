@@ -4,12 +4,14 @@
 #include <utility>
 
 #include "config/ConfigManager.hpp"
+#include "config/AppConfig.hpp"
 
 #include "utils/logger.hpp"
 #include "utils/shared.hpp"
 
 #include "business/Watchdog.hpp"
 #include "business/rules/IWatchdogRule.hpp"
+#include "business/rules/thresholdWatchdogRule.hpp" 
 #include "business/rules/WatchdogRuleBPM.hpp"
 #include "business/rules/WatchdogRuleSpO2.hpp"
 #include "business/rules/WatchdogRuleTemp.hpp"
