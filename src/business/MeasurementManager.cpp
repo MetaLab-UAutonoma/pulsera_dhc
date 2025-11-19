@@ -1,5 +1,6 @@
 // measurement_manager.cpp
 #include "business/MeasurementManager.hpp"
+#include "output/SDStorage.hpp"
 
 const char* measurementTypeToString(MeasurementType t) {
     switch (t) {
@@ -41,6 +42,7 @@ void MeasurementManager::addMeasurement(MeasurementType type, float val) {
     if (it != entries_.end()) {
         it->second.add(val);
         logger.log(LOG_DEBUG, "addMeasurement(%s): %.2f", measurementTypeToString(type), val);
+        SDStorage::instance().saveMeasurement(type, val);
     } else {
         logger.log(LOG_WARN, "Manager para '%s' no configurado. Medición descartada.", measurementTypeToString(type));
     }

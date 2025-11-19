@@ -1,7 +1,8 @@
 // main.cpp
 #include "main.hpp"
+#include "output/SDStorage.hpp"
 
-bool a = ConfigManager::instance().loadFromFile("/config/config.json");
+//bool a = ConfigManager::instance().loadFromFile("/config/config.json");
 const AppConfig& config = ConfigManager::instance().getConfig();
 
 // ——— Instancias de los módulos (POO) ———
@@ -24,6 +25,7 @@ void setup() {
     pinMode(DEBUG_PIN, INPUT);
     Wire.begin();
     modem.init();
+    SDStorage::instance().init(config.output.sd);
 
     Watchdog& watchdog = Watchdog::instance();
     const auto& wd_rules_config = config.business.watchdog; // Alias para legibilidad

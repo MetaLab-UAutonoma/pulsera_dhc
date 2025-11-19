@@ -43,10 +43,15 @@ struct InputConfig {
 struct ModemConfig {
     float timer_check_seg;
 };
-
+struct SDConfig {
+    bool enabled;
+    int cs_pin;
+};
 struct OutputConfig {
     ModemConfig modem;
+    SDConfig sd; 
 };
+
 
 // --- BUSINESS ---
 struct RuleConfig {

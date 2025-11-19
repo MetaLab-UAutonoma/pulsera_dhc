@@ -4,21 +4,24 @@
 #include <utility>
 
 #include "config/ConfigManager.hpp"
+#include "config/AppConfig.hpp"
 
 #include "utils/logger.hpp"
 #include "utils/shared.hpp"
 
 #include "business/Watchdog.hpp"
 #include "business/rules/IWatchdogRule.hpp"
+#include "business/rules/thresholdWatchdogRule.hpp" 
 #include "business/rules/WatchdogRuleBPM.hpp"
 #include "business/rules/WatchdogRuleSpO2.hpp"
 #include "business/rules/WatchdogRuleTemp.hpp"
-#include "business/rules/WatchdogRuleBattery.hpp" 
+#include "business/rules/WatchdogRuleBattery.hpp"
+
 
 #include "input/PoxMax30100Sensor.hpp"
 #include "input/TempSensor.hpp"
 #include "input/BatterySensor.hpp" 
-
+#include "input/Sensor.hpp"
 #include "output/Sim7600Modem.hpp"
 
 namespace std {

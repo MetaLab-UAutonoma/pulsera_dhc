@@ -37,7 +37,8 @@ ConfigManager::ConfigManager() {
         .output = {
             .modem = {
                 .timer_check_seg = 5.0f
-            }
+            },
+            .sd = { .enabled = true, .cs_pin = 5 }
         },
         .business = {
             .watchdog = {
@@ -100,6 +101,9 @@ bool ConfigManager::loadFromFile(const char* filepath) {
 
     // Sección [output]
     config_.output.modem.timer_check_seg = doc["output"]["Sim7600Modem"]["timer_check_seg"] | config_.output.modem.timer_check_seg;
+    JsonObject sdJson = doc["output"]["SD"];
+    config_.output.sd.enabled = sdJson["enabled"] | config_.output.sd.enabled;
+    config_.output.sd.cs_pin  = sdJson["cs_pin"] | config_.output.sd.cs_pin;
 
     // Sección [business]
     JsonObject watchdog = doc["business"]["watchdog"];
