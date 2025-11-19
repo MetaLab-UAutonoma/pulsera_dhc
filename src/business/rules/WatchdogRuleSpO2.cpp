@@ -6,7 +6,7 @@ WatchdogRuleSpO2::WatchdogRuleSpO2(float min_val, float max_val, uint32_t alert_
     : ThresholdWatchdogRule(
           MeasurementManager::instance(), // 1. Inyectamos la dependencia del Singleton aquí
           MEAS_TEMPERATURE,               // 2. Definimos el TIPO de medición específico
-          "Temp",                         // 3. Definimos el NOMBRE para los logs
+          "SpO2",                         // 3. Definimos el NOMBRE para los logs
           min_val,                        // 4. Pasamos el resto de umbrales
           max_val,
           alert_duration_sec,

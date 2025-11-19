@@ -12,6 +12,7 @@ TempSensor    tempSensor(PIN_SENSOR_TEMP, config.input.temp_sensor);
 BatterySensor batterySensor(PIN_BATTERY_ADC, config.input.bat_sensor);
 
 Sim7600Modem  modem(simSerial, SIM_RX, SIM_TX, config.general.telefono_destino.c_str(), config.output.modem);
+GpsUblox      gpsSensor(gpsSerial, GPS_RX, GPS_TX);
 //BatterySensorAdapter batteryInput(batterySensor);
 
 
@@ -24,6 +25,7 @@ void setup() {
     pinMode(DEBUG_PIN, INPUT);
     Wire.begin();
     modem.init();
+    gpsSensor.init(); 
 
     Watchdog& watchdog = Watchdog::instance();
     const auto& wd_rules_config = config.business.watchdog; // Alias para legibilidad
@@ -68,6 +70,16 @@ void setup() {
     );
     watchdog.addRule(MEAS_BPM,std::move(bpm_rule));
 
+     // Crear Regla de Gps
+    auto gps_rule = std::make_unique<WatchdogRuleGps>(
+        wd_rules_config.gps_rule.min_val,
+        wd_rules_config.gps_rule.max_val,
+        wd_rules_config.gps_rule.alert_sec,
+        wd_rules_config.gps_rule.hist_items,
+        wd_rules_config.gps_rule.hist_age_sec
+    );
+    watchdog.addRule(MEAS_GPS_SATS, std::move(gps_rule));
+
     logger.log(LOG_INFO, "== Sistema iniciado ==");
 }
 
@@ -84,6 +96,7 @@ void loop() {
     poxSensor.update(now);
     tempSensor.update(now);
     batterySensor.update(now);
+    gpsSensor.update(now);
     
     modem.update(now);
 

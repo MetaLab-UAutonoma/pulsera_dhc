@@ -14,10 +14,12 @@
 #include "business/rules/WatchdogRuleSpO2.hpp"
 #include "business/rules/WatchdogRuleTemp.hpp"
 #include "business/rules/WatchdogRuleBattery.hpp" 
+#include "business/rules/WatchdogRuleGps.hpp" 
 
 #include "input/PoxMax30100Sensor.hpp"
 #include "input/TempSensor.hpp"
 #include "input/BatterySensor.hpp" 
+#include "input/GpsUblox.hpp" 
 
 #include "output/Sim7600Modem.hpp"
 

@@ -38,8 +38,11 @@
         },
         "bpm": {
           "min_val": 50.0, "max_val": 110.0, "alert_sec": 180,
-          "hist_items": 60, "hist_age_sec": 3600
-        }
+          "hist_items": 60, "hist_age_sec": 3600        
+        },
+        "gps": { 
+          "min_val": 3.0, "max_val": 20.0, "alert_sec": 600,
+          "hist_items": 10, "hist_age_sec": 1200
       }
     }
   }

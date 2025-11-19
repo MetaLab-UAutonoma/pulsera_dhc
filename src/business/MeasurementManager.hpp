@@ -13,7 +13,11 @@ enum MeasurementType {
     MEAS_SPO2,
     MEAS_BPM,
     MEAS_BATTERY_PERCENT,
-    MEAS_BATTERY_VOLTAGE
+    MEAS_BATTERY_VOLTAGE,
+    MEAS_GPS_LAT,
+    MEAS_GPS_LON,
+    MEAS_GPS_SATS,
+    MEAS_GPS_SPEED,
 };
 
 const char* measurementTypeToString(MeasurementType t);

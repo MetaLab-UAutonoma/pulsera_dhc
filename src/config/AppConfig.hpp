@@ -62,6 +62,7 @@ struct WatchdogConfig {
     RuleConfig spo2_rule;
     RuleConfig bpm_rule;
     RuleConfig battery_rule;
+    RuleConfig gps_rule;
 };
 
 struct BusinessConfig {

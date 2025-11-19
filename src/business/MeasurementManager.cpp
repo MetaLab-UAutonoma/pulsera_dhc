@@ -8,6 +8,10 @@ const char* measurementTypeToString(MeasurementType t) {
         case MEAS_BPM:         return "BPM";
         case MEAS_BATTERY_PERCENT:  return "Battery %";
         case MEAS_BATTERY_VOLTAGE:  return "Battery V";
+        case MEAS_GPS_LAT:        return "GPS_LAT";
+        case MEAS_GPS_LON:        return "GPS_LON";
+        case MEAS_GPS_SATS:       return "GPS_SATS";
+        case MEAS_GPS_SPEED:      return "GPS_SPEED";
         default:               return "Unknown";
     }
 }

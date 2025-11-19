@@ -7,8 +7,11 @@
 #define SIM_RX          16
 #define DEBUG_PIN       25
 #define PIN_BATTERY_ADC 35
+#define GPS_TX          27 
+#define GPS_RX          26 
 
-extern HardwareSerial simSerial; 
+extern HardwareSerial simSerial;
+extern HardwareSerial gpsSerial;
 
 // Conversión a milisegundos
 #define SEG_A_MS(x) ((uint32_t)((x) * 1000UL))
