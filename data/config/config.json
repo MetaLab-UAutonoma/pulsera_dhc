@@ -23,6 +23,14 @@
     "Sim7600Modem": {
       "timer_check_seg": 5.0
     },
+<<<<<<< HEAD
+=======
+    
+    "SD": {
+      "enabled": true,
+      "cs_pin": 5
+    }
+>>>>>>> cbe549a9b84a819fba72129f4a228b404b6ae2d0
   },
   "business": {
     "watchdog": {
