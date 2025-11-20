@@ -37,6 +37,7 @@ public:
 
     /** ¿El módem está activo? */
     bool isActive() const;
+    bool sendSMS(const String& p_msg);
 
 private:
     const ModemConfig& config_;

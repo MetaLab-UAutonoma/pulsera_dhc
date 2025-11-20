@@ -129,6 +129,13 @@ bool ConfigManager::loadFromFile(const char* filepath) {
     config_.business.watchdog.bpm_rule.hist_items = rules["bpm"]["hist_items"] | config_.business.watchdog.bpm_rule.hist_items;
     config_.business.watchdog.bpm_rule.hist_age_sec = rules["bpm"]["hist_age_sec"] | config_.business.watchdog.bpm_rule.hist_age_sec;
 
+    config_.business.watchdog.gps_rule.min_val = rules["gps"]["min_val"] | config_.business.watchdog.gps_rule.min_val;
+    config_.business.watchdog.gps_rule.max_val = rules["gps"]["max_val"] | config_.business.watchdog.gps_rule.max_val;
+    config_.business.watchdog.gps_rule.alert_sec = rules["gps"]["alert_sec"] | config_.business.watchdog.gps_rule.alert_sec;
+    config_.business.watchdog.gps_rule.hist_items = rules["gps"]["hist_items"] | config_.business.watchdog.gps_rule.hist_items;
+    config_.business.watchdog.gps_rule.hist_age_sec = rules["gps"]["hist_age_sec"] | config_.business.watchdog.gps_rule.hist_age_sec;
+
+
     loaded_ = true;
     logger.log(LOG_INFO, "Configuración estructurada cargada desde '%s'", filepath);
     return true;

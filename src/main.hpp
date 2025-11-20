@@ -24,6 +24,7 @@
 #include "input/GpsUblox.hpp" 
 
 #include "output/Sim7600Modem.hpp"
+#include "output/senders/SmsSender.hpp" 
 
 namespace std {
     template<typename T, typename... Args>
