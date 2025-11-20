@@ -23,25 +23,22 @@
     "Sim7600Modem": {
       "timer_check_seg": 5.0
     },
-<<<<<<< HEAD
-=======
     
     "SD": {
       "enabled": true,
       "cs_pin": 5
     }
->>>>>>> cbe549a9b84a819fba72129f4a228b404b6ae2d0
   },
   "business": {
     "watchdog": {
       "check_interval_seg": 5,
       "rules": {
         "temp": {
-          "min_val": 36.0, "max_val": 38.5, "alert_sec": 300,
+          "min_val": 50.0, "max_val": 38.5, "alert_sec": 10,
           "hist_items": 60, "hist_age_sec": 3600
         },
         "spo2": {
-          "min_val": 92.0, "max_val": 100.0, "alert_sec": 120,
+          "min_val": 92.0, "max_val": 100.0, "alert_sec": 10,
           "hist_items": 60, "hist_age_sec": 3600
         },
         "bpm": {
