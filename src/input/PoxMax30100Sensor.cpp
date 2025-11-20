@@ -1,5 +1,6 @@
 // input/sensor_max30100.cpp
 #include "PoxMax30100Sensor.hpp"
+#include "business/MeasurementManager.hpp"
 
 PoxMax30100Sensor::PoxMax30100Sensor(PulseOximeter& p_pox, const PoxSensorConfig& config)
   : pox_(p_pox)
@@ -77,6 +78,9 @@ void PoxMax30100Sensor::update(uint32_t p_now) {
                 float avgB = sumBpm_ / countPulso_;
                 float avgS = sumSpo2_ / countPulso_;
                 logger.log(LOG_INFO, "BPM avg=%.2f  SpO2 avg=%.2f", avgB, avgS);
+                MeasurementManager::instance().addMeasurement(MEAS_BPM, avgB);
+                MeasurementManager::instance().addMeasurement(MEAS_SPO2, avgS);
+            
             } else {
                 logger.log(LOG_WARN, "No hubo lecturas de pulso en el periodo.");
             }

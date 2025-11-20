@@ -2,7 +2,8 @@
 
 #include "business/rules/IWatchdogRule.hpp"
 #include "business/MeasurementManager.hpp"
-#include "utils/logger.hpp" 
+#include "utils/logger.hpp"
+#include "output/AlertDispatcher.hpp"
 
 
 class ThresholdWatchdogRule : public IWatchdogRule {

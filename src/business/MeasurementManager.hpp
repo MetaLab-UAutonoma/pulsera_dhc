@@ -40,10 +40,13 @@ public:
 
 float getLast(MeasurementType type) const {
         auto it = entries_.find(type);
-        if (it == entries_.end()) return 0.0f;
-        return 0;// it->second.last().value;
+        // 1. Si no se encuentra el tipo, o si la lista está vacía, devuelve 0.0f.
+        if (it == entries_.end() || it->second.getData().empty()) { 
+            return 0.0f;
+        }
+        // 2. Devuelve el valor del último elemento de la lista.
+        return it->second.getData().back().value; 
     }
-
 
 
 private:

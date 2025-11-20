@@ -1,5 +1,6 @@
 // input/sensor_temp.cpp
 #include "input/TempSensor.hpp"
+#include "business/MeasurementManager.hpp"
 
 TempSensor::TempSensor(int p_pinSensor, const TempSensorConfig& config)
   : pinSensor_(p_pinSensor)
@@ -62,6 +63,7 @@ void TempSensor::update(uint32_t now) {
                 float avgT = sumTemp_ / countTemp_;
                 logger.log(LOG_INFO, "Temp avg=%.2f°C", avgT);
                 // TODO Measurement Manager (e.g. envío SMS si fuera necesario)
+                MeasurementManager::instance().addMeasurement(MEAS_TEMPERATURE, avgT);
             } else {
                 logger.log(LOG_WARN, "No hubo lecturas de temp en el periodo.");
             }

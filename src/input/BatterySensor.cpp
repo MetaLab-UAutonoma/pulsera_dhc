@@ -1,5 +1,5 @@
 #include "BatterySensor.hpp"
-
+#include "business/MeasurementManager.hpp"
 BatterySensor::BatterySensor(int adcPin, const BatterySensorConfig& config)
     : _adcPin(adcPin), 
     _r1(0), 
@@ -93,8 +93,21 @@ void BatterySensor::update(uint32_t p_now) {
             }
             break;
 
+
         case State::ANALIZANDO:
+            float voltage = readVoltage();
+            int percent = readPercentage();
+            
+            logger.log(LOG_INFO, "Batería: %.2fV / %d%%", voltage, percent);
+            
+            // --- CÓDIGO AÑADIDO ---
+            MeasurementManager::instance().addMeasurement(MEAS_BATTERY_VOLTAGE, voltage);
+            MeasurementManager::instance().addMeasurement(MEAS_BATTERY_PERCENT, (float)percent);
+            // ----------------------
+
             state_   = State::APAGADO;
             break;
     }
 }
+
+
