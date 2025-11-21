@@ -106,6 +106,7 @@ void BatterySensor::update(uint32_t p_now) {
             // ----------------------
 
             state_   = State::APAGADO;
+            tsBat_ = p_now;
             break;
     }
 }

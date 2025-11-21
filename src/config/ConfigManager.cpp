@@ -34,9 +34,9 @@ ConfigManager::ConfigManager() {
                 .timer_estabilizacion_seg = 10.0f
             },
             .bat_sensor = {
-                .ciclo_monitoreo_seg = 30.0f,
-                .duracion_lectura_seg = 20.0f,
-                .timer_estabilizacion_seg = 10.0f
+                .ciclo_monitoreo_seg = 60.0f,
+                .duracion_lectura_seg = 1.0f,
+                .timer_estabilizacion_seg = 0.1f
             }
         },
         .output = {
@@ -105,6 +105,10 @@ bool ConfigManager::loadFromFile(const char* filepath) {
     config_.input.pox_sensor.ciclo_monitoreo_seg = input["PoxMax30100Sensor"]["ciclo_monitoreo_seg"] | config_.input.pox_sensor.ciclo_monitoreo_seg;
     config_.input.pox_sensor.duracion_lectura_seg = input["PoxMax30100Sensor"]["duracion_lectura_seg"] | config_.input.pox_sensor.duracion_lectura_seg;
     config_.input.pox_sensor.timer_estabilizacion_seg = input["PoxMax30100Sensor"]["timer_estabilizacion_seg"] | config_.input.pox_sensor.timer_estabilizacion_seg;
+
+    config_.input.bat_sensor.ciclo_monitoreo_seg = input["BatterySensor"]["ciclo_monitoreo_seg"] | config_.input.bat_sensor.ciclo_monitoreo_seg;
+    config_.input.bat_sensor.duracion_lectura_seg = input["BatterySensor"]["duracion_lectura_seg"] | config_.input.bat_sensor.duracion_lectura_seg;
+    config_.input.bat_sensor.timer_estabilizacion_seg = input["BatterySensor"]["timer_estabilizacion_seg"] | config_.input.bat_sensor.timer_estabilizacion_seg;
 
     // Sección [output]
     config_.output.modem.timer_check_seg = doc["output"]["Sim7600Modem"]["timer_check_seg"] | config_.output.modem.timer_check_seg;
