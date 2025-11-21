@@ -17,6 +17,11 @@
       "ciclo_monitoreo_seg": 30.0,
       "duracion_lectura_seg": 20.0,
       "timer_estabilizacion_seg": 10.0
+    },
+    "BatterySensor": {
+      "ciclo_monitoreo_seg": 30.0,
+      "duracion_lectura_seg": 20.0,
+      "timer_estabilizacion_seg": 10.0
     }
   },
   "output": {
@@ -42,6 +47,10 @@
           "hist_items": 60, "hist_age_sec": 3600
         },
         "bpm": {
+          "min_val": 50.0, "max_val": 110.0, "alert_sec": 180,
+          "hist_items": 60, "hist_age_sec": 3600        
+        },
+        "bat": {
           "min_val": 50.0, "max_val": 110.0, "alert_sec": 180,
           "hist_items": 60, "hist_age_sec": 3600        
         },

@@ -33,10 +33,17 @@ struct BatterySensorConfig {
     float timer_estabilizacion_seg;
 };
 
+struct GpsSensorConfig {
+    float ciclo_monitoreo_seg;
+    float duracion_lectura_seg;
+    float timer_estabilizacion_seg;
+};
+
 struct InputConfig {
     TempSensorConfig temp_sensor;
     PoxSensorConfig pox_sensor;
     BatterySensorConfig bat_sensor;
+    GpsSensorConfig gps_sensor;
 };
 
 // --- OUTPUT ---

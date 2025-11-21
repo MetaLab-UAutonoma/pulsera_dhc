@@ -26,7 +26,7 @@ void setup() {
     pinMode(DEBUG_PIN, INPUT);
     Wire.begin();
     modem.init();
-   auto sms_sender = std::unique_ptr<SmsSender>(new SmsSender(modem));
+    auto sms_sender = std::unique_ptr<SmsSender>(new SmsSender(modem));
     AlertDispatcher::instance().addSender(std::move(sms_sender));
     SDStorage::instance().init(config.output.sd);
     gpsSensor.init(); 

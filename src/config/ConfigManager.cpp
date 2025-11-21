@@ -32,6 +32,11 @@ ConfigManager::ConfigManager() {
                 .ciclo_monitoreo_seg = 30.0f,
                 .duracion_lectura_seg = 20.0f,
                 .timer_estabilizacion_seg = 10.0f
+            },
+            .bat_sensor = {
+                .ciclo_monitoreo_seg = 30.0f,
+                .duracion_lectura_seg = 20.0f,
+                .timer_estabilizacion_seg = 10.0f
             }
         },
         .output = {
@@ -45,7 +50,9 @@ ConfigManager::ConfigManager() {
                 .check_interval_ms = 5000,
                 .temp_rule = {36.0f, 38.5f, 300, 60, 3600},
                 .spo2_rule = {92.0f, 100.0f, 120, 60, 3600},
-                .bpm_rule = {50.0f, 110.0f, 180, 60, 3600}
+                .bpm_rule = {50.0f, 110.0f, 180, 60, 3600},
+                .battery_rule = {50.0f, 110.0f, 180, 60, 3600},
+                .gps_rule = {50.0f, 110.0f, 180, 60, 3600}
             }
         }
     };
