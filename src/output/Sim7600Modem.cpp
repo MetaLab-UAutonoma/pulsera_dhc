@@ -2,8 +2,7 @@
 #include "utils/logger.hpp" // NECESARIO para logger.log()
 #include <Arduino.h>      // NECESARIO para delay(), String, y Serial (UART)
 
-// 1. ELIMINAMOS la línea #include "SmsSender.hpp" para evitar conflictos
-// 2. ELIMINAMOS el código de SmsSender::send(...)
+
 
 Sim7600Modem::Sim7600Modem(HardwareSerial& p_serial,
                            int p_rxPin,
@@ -23,6 +22,13 @@ Sim7600Modem::Sim7600Modem(HardwareSerial& p_serial,
 {}
 
 void Sim7600Modem::init() {
+    // Secuencia de encendido
+    pinMode(SIM_PWR_PIN, OUTPUT);
+    digitalWrite(SIM_PWR_PIN, LOW);
+    delay(100);
+    digitalWrite(SIM_PWR_PIN, HIGH);
+    delay(2500); // Presionar botón virtualmente por 2.5s
+    digitalWrite(SIM_PWR_PIN, LOW);
     serial_.begin(115200, SERIAL_8N1, rxPin_, txPin_);
 }
 

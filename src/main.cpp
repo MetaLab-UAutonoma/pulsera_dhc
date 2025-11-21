@@ -62,6 +62,7 @@ void setup() {
         wd_rules_config.battery_rule.hist_age_sec
     );
     watchdog.addRule(MEAS_BATTERY_PERCENT, std::move(battery_rule));
+    MeasurementManager::instance().configure(MEAS_BATTERY_VOLTAGE, 60, 3600);
 
 
     // Crear Regla de BPM
@@ -83,6 +84,7 @@ void setup() {
         wd_rules_config.gps_rule.hist_age_sec
     );
     watchdog.addRule(MEAS_GPS_SATS, std::move(gps_rule));
+    
 
     logger.log(LOG_INFO, "== Sistema iniciado ==");
 }
