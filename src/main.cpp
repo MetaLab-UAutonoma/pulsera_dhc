@@ -25,6 +25,7 @@ void setup() {
 
     pinMode(DEBUG_PIN, INPUT);
     Wire.begin();
+    analogReadResolution(12); // <-- AÑADIR ESTA LÍNEA AQUÍ
     modem.init();
     auto sms_sender = std::unique_ptr<SmsSender>(new SmsSender(modem));
     AlertDispatcher::instance().addSender(std::move(sms_sender));
