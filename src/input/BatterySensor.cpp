@@ -2,8 +2,8 @@
 #include "business/MeasurementManager.hpp"
 BatterySensor::BatterySensor(int adcPin, const BatterySensorConfig& config)
     : _adcPin(adcPin), 
-    _r1(1), 
-    _r2(0), 
+    _r1(0.0f), 
+    _r2(1.0f), 
     config_(config),
     active_(false),
     tsBat_(0),
