@@ -56,12 +56,12 @@ int BatterySensor::readPercentage() {
 }
 
 
+// pulsera_dhc/src/input/BatterySensor.cpp (Dentro de init())
+
 void BatterySensor::init() {
-    // idéntico a initSensorPox(...)
-    if (true) {
-    } 
-    else {
-    }
+    // Código de inicialización de la batería debe ir aquí
+    begin(); // Llamar a la inicialización del ADC
+    logger.log(LOG_INFO, "Sensor de Batería listo.");
 }
 
 void BatterySensor::update(uint32_t p_now) {
