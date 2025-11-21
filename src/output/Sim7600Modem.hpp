@@ -14,6 +14,7 @@ public:
 
     enum class State : uint8_t {
         APAGADO,
+        WAITING_BOOT,
         ESPERAR_RESP,
         ANALIZAR_RESP,
     };

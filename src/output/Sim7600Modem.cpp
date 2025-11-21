@@ -22,7 +22,12 @@ Sim7600Modem::Sim7600Modem(HardwareSerial& p_serial,
 {}
 
 void Sim7600Modem::init() {
-    // Secuencia de encendido
+
+    tsModem_ = millis(); // Reinicia el contador de tiempo
+    state_ = State::WAITING_BOOT; // <-- [2] TRANSICIÓN A ESPERA CRÍTICA
+    logger.log(LOG_INFO, "SIM7600: Iniciado. Esperando arranque (30s)...");
+
+    // Secuencia de encendido 
     pinMode(SIM_PWR_PIN, OUTPUT);
     digitalWrite(SIM_PWR_PIN, LOW);
     delay(100);
@@ -48,6 +53,15 @@ void Sim7600Modem::update(uint32_t p_now) {
                 tsModemCmd_ = p_now;
                 modemResp_.clear();
                 state_ = State::ESPERAR_RESP;
+            }
+            break;
+        case State::WAITING_BOOT: // <-- [3] NUEVO ESTADO
+            // Espera CRÍTICA de 30 segundos (o más, 30s es un buen mínimo)
+            if (p_now - tsModem_ >= SEG_A_MS(30)) { 
+                logger.log(LOG_INFO, "SIM7600: Fin de espera. Forzando chequeo AT.");
+                // La transición a APAGADO con tsModem_ = 0 forzará el envío del primer AT en el siguiente ciclo.
+                state_ = State::APAGADO;
+                tsModem_ = 0; 
             }
             break;
 
@@ -76,6 +90,7 @@ void Sim7600Modem::update(uint32_t p_now) {
 const char* Sim7600Modem::stateToString(State p_state) {
     switch (p_state) {
         case State::APAGADO:      return "APAGADO";
+        case State::WAITING_BOOT: return "WAITING_BOOT"; // <-- [3] NUEVO CASE
         case State::ESPERAR_RESP: return "ESPERAR_RESP";
         case State::ANALIZAR_RESP:return "ANALIZAR_RESP";
     }
