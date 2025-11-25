@@ -1,6 +1,8 @@
 // input/sensor_temp.cpp
 #include "input/TempSensor.hpp"
 #include "business/MeasurementManager.hpp"
+#include <DHT.h>
+static float lastReadTemp = 0.0f; // <-- ¡Esta línea debe estar aquí!
 
 TempSensor::TempSensor(int p_pinSensor, const TempSensorConfig& config)
   : pinSensor_(p_pinSensor)
@@ -9,10 +11,12 @@ TempSensor::TempSensor(int p_pinSensor, const TempSensorConfig& config)
   , tsTemp_(0)
   , tsWaitingTemp_(0)
   , tsLeerTemp_(0)
-  , sumTemp_(0)
+ /* , sumTemp_(0)
   , countTemp_(0)
+  */
   , state_(State::APAGADO)
   , alertT_(false)
+  , dht_(p_pinSensor, DHTTYPE)
 {}
 
 void TempSensor::init() {
@@ -29,6 +33,7 @@ void TempSensor::update(uint32_t now) {
                 active_       = true;
                 tsWaitingTemp_= now;
                 tsTemp_       = now;
+                lastReadTemp  = 0; // Reiniciamos la lectura
                 sumTemp_      = 0;
                 countTemp_    = 0;
                 state_        = State::WAITING;
@@ -42,8 +47,48 @@ void TempSensor::update(uint32_t now) {
                 state_      = State::LEYENDO;
             }
             break;
-
+        
         case State::LEYENDO:
+            // Solo necesitamos una lectura en este estado
+            if (active_ && lastReadTemp == 0) { 
+                tsLeerTemp_ = now;
+                float t = dht_.readTemperature(); // <-- LECTURA DIGITAL DHT
+                
+                if (isnan(t)) {
+                    logger.log(LOG_WARN, "Fallo al leer del sensor DHT. Retentando...");
+                } else {
+                    lastReadTemp = t; 
+                    logger.log(LOG_DEBUG, "read t=%.2f", lastReadTemp);
+                }
+            }
+            
+            // Si hay lectura o si el tiempo de lectura se agotó, pasa a analizar
+            if (lastReadTemp != 0.0f || (now - tsTemp_ >= SEG_A_MS(config_.duracion_lectura_seg))) {
+                logger.log(LOG_DEBUG, "LEYENDO→ANALIZANDO");
+                state_ = State::ANALIZANDO;
+            }
+            break;
+
+        case State::ANALIZANDO:
+            if (lastReadTemp != 0.0f) {
+                logger.log(LOG_INFO, "Temp DHT=%.2f°C", lastReadTemp);
+                MeasurementManager::instance().addMeasurement(MEAS_TEMPERATURE, lastReadTemp);
+                
+                // OPCIONAL: Si quieres medir la humedad, se debe añadir un MEAS_HUMIDITY
+                // float h = dht_.readHumidity();
+                // if (!isnan(h)) MeasurementManager::instance().addMeasurement(MEAS_HUMIDITY, h);
+
+            } else {
+                logger.log(LOG_WARN, "No hubo lecturas válidas de DHT en el periodo.");
+            }
+            tsTemp_ = now;
+            state_  = State::APAGADO;
+            break;
+    }
+}
+
+
+        /*case State::LEYENDO:
             if (active_) {
                 tsLeerTemp_ = now;
                 float v = analogRead(pinSensor_) * (3.3f / 4095.0f);
@@ -71,4 +116,4 @@ void TempSensor::update(uint32_t now) {
             state_  = State::APAGADO;
             break;
     }
-}
+}*/

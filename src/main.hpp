@@ -21,6 +21,9 @@
 #include "input/PoxMax30100Sensor.hpp"
 #include "input/TempSensor.hpp"
 #include "input/BatterySensor.hpp" 
+// --- NUEVAS LIBRERÍAS DHT ---
+#include <DHT.h>
+#include <DHT_U.h>
 
 
 #include "output/Sim7600Modem.hpp"

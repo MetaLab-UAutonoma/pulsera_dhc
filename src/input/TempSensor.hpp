@@ -5,6 +5,8 @@
 #include "config/AppConfig.hpp" // Para tener la struct
 #include "utils/logger.hpp"
 #include "input/Sensor.hpp"
+#include <DHT.h> // <-- NUEVO
+#define DHTTYPE DHT11 // Define el modelo que tienes (DHT11 o DHT22)
 
 class TempSensor : public Sensor {
 public:
@@ -23,7 +25,12 @@ private:
     float         sumTemp_;
     int           countTemp_;
     State         state_;
-    float         tempMin_;
-    float         tempMax_;
     bool          alertT_;
+    DHT           dht_; 
+
 };
+    /*float         tempMin_;
+    float         tempMax_;
+    
+};
+*/
