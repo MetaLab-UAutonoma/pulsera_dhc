@@ -7,8 +7,9 @@
 #define SIM_RX          16
 #define DEBUG_PIN       25
 #define PIN_BATTERY_ADC 35
-#define GPS_TX          27 
+/*#define GPS_TX          27 
 #define GPS_RX          26 
+*/
 #define SIM_PWR_PIN     4
 extern HardwareSerial simSerial;
 extern HardwareSerial gpsSerial;

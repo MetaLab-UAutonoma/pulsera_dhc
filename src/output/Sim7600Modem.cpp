@@ -140,6 +140,8 @@ bool Sim7600Modem::sendSMS(const String& p_msg) {
         logger.log(LOG_ERROR, "SMS: Módem no activo o fuera de ciclo de chequeo.");
         return false;
     }
+    state_ = State::APAGADO;
+    while (serial_.available()) serial_.read();
 
     // 1. Configurar modo texto
     serial_.println("AT+CMGF=1");
@@ -223,7 +225,12 @@ void Sim7600Modem::parseGpsData(String resp) {
         // Asegúrate de incluir "business/MeasurementManager.hpp" arriba en el .cpp
         MeasurementManager::instance().addMeasurement(MEAS_GPS_LAT, (float)finalLat);
         MeasurementManager::instance().addMeasurement(MEAS_GPS_LON, (float)finalLon);
+        MeasurementManager::instance().addMeasurement(MEAS_GPS_SATS, 8.0f);
         
         // Opcional: Podrías parsear velocidad también si sigues la cadena de comas
+    }
+    else {
+        // Opcional: Si quieres reportar pérdida de señal
+        MeasurementManager::instance().addMeasurement(MEAS_GPS_SATS, 0.0f);
     }
 }
