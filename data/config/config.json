@@ -1,6 +1,6 @@
 {
   "general": {
-    "telefono_destino": "+56912345678"
+    "telefono_destino": "+56993337380"
   },
   "ntp": {
     "server": "cl.pool.ntp.org",
@@ -50,7 +50,7 @@
           "min_val": 50.0, "max_val": 110.0, "alert_sec": 180,
           "hist_items": 60, "hist_age_sec": 3600        
         },
-        "bat": {
+        "battery": {
           "min_val": 50.0, "max_val": 110.0, "alert_sec": 180,
           "hist_items": 60, "hist_age_sec": 3600        
         },
