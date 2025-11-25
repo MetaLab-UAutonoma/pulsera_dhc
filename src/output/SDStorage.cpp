@@ -2,6 +2,7 @@
 #include "output/SDStorage.hpp"
 #include "utils/logger.hpp"
 #include "utils/shared.hpp" // Para timestamp string
+#include <SPI.h>
 
 SDStorage& SDStorage::instance() {
     static SDStorage inst;
@@ -14,9 +15,9 @@ bool SDStorage::init(const SDConfig& config) {
         logger.log(LOG_INFO, "SD: Deshabilitada por configuración.");
         return false;
     }
-
-    // Inicializamos SD con el pin CS definido
-    if (!SD.begin(config.cs_pin)) {
+    SPI.begin(18, 19, 23, config.cs_pin);
+    
+    if (!SD.begin(config.cs_pin, SPI)) {
         logger.log(LOG_ERROR, "SD: Falló inicialización (Card Mount Failed).");
         return false;
     }
