@@ -21,7 +21,7 @@
 #include "input/PoxMax30100Sensor.hpp"
 #include "input/TempSensor.hpp"
 #include "input/BatterySensor.hpp" 
-#include "input/GpsUblox.hpp" 
+
 
 #include "output/Sim7600Modem.hpp"
 #include "output/senders/SmsSender.hpp" 

@@ -1,6 +1,7 @@
 #include "Sim7600Modem.hpp"
 #include "utils/logger.hpp" // NECESARIO para logger.log()
 #include <Arduino.h>      // NECESARIO para delay(), String, y Serial (UART)
+#include "business/MeasurementManager.hpp"
 
 
 
@@ -35,6 +36,16 @@ void Sim7600Modem::init() {
     delay(2500); // Presionar botón virtualmente por 2.5s
     digitalWrite(SIM_PWR_PIN, LOW);
     serial_.begin(115200, SERIAL_8N1, rxPin_, txPin_);
+
+    
+    delay(1000);
+    // COMANDO IMPORTANTE: Encender el motor GPS
+    serial_.println("AT+CGPS=1"); 
+    logger.log(LOG_INFO, "SIM7600: Enviado comando de encendido GPS (AT+CGPS=1)");
+    
+    tsModem_ = millis();
+    state_ = State::WAITING_BOOT;
+
 }
 
 // CORRECCIÓN 1: Agregar corchetes {}
@@ -51,8 +62,16 @@ void Sim7600Modem::update(uint32_t p_now) {
                 logger.log(LOG_DEBUG, "Enviando AT");
                 serial_.println("AT");
                 tsModemCmd_ = p_now;
-                modemResp_.clear();
+                modemResp_ = "";
                 state_ = State::ESPERAR_RESP;
+            }
+            else if (modemActivo_ && (p_now - lastGpsPoll_ >= gpsInterval_)) {
+                logger.log(LOG_DEBUG, "Solicitando coordenadas GPS...");
+                serial_.println("AT+CGPSINFO"); // Comando para pedir info
+                tsModemCmd_ = p_now;
+                modemResp_ = "";
+                state_ = State::ESPERAR_RESP_GPS; // Vamos al nuevo estado
+                lastGpsPoll_ = p_now;
             }
             break;
         case State::WAITING_BOOT: // <-- [3] NUEVO ESTADO
@@ -75,6 +94,23 @@ void Sim7600Modem::update(uint32_t p_now) {
             }
             break;
 
+            case State::ESPERAR_RESP_GPS:
+            while (serial_.available()) {
+                modemResp_ += char(serial_.read());
+            }
+
+            if (modemResp_.indexOf("+CGPSINFO:") != -1 && modemResp_.endsWith("\n")) {
+                parseGpsData(modemResp_);
+                state_ = State::APAGADO; // Volvemos a reposo
+                tsModem_ = p_now;        // Reseteamos timer general para no chocar
+            }
+            // Timeout de seguridad (2 seg)
+            if (p_now - tsModemCmd_ >= 2000) {
+                logger.log(LOG_WARN, "Timeout esperando GPS");
+                state_ = State::APAGADO;
+            }
+            break;
+
         case State::ANALIZAR_RESP:
             logger.log(LOG_DEBUG, "RESP=\"%s\"", modemResp_.c_str());
             modemActivo_ = (modemResp_.indexOf("OK") != -1);
@@ -92,6 +128,7 @@ const char* Sim7600Modem::stateToString(State p_state) {
         case State::APAGADO:      return "APAGADO";
         case State::WAITING_BOOT: return "WAITING_BOOT"; // <-- [3] NUEVO CASE
         case State::ESPERAR_RESP: return "ESPERAR_RESP";
+        case State::ESPERAR_RESP_GPS: return "ESPERAR_RESP_GPS"; 
         case State::ANALIZAR_RESP:return "ANALIZAR_RESP";
     }
     return "UNKNOWN";
@@ -123,4 +160,70 @@ bool Sim7600Modem::sendSMS(const String& p_msg) {
     logger.log(LOG_INFO, "SMS: Comando de envío ejecutado para %s.", telefonoDestino_);
 
     return true; 
+}
+    double Sim7600Modem::convertToDecimal(String raw, String hemi) {
+    if (raw.length() == 0) return 0.0;
+    
+    // Formato raw: DDDMM.MMMM (ej: 3322.1234)
+    // Los últimos 7 caracteres aprox son los minutos. 
+    // Punto decimal está en raw.indexOf('.')
+    
+    int dotPos = raw.indexOf('.');
+    if (dotPos < 2) return 0.0;
+
+    // Separamos grados de minutos. Los minutos son siempre los 2 dígitos antes del punto + decimales
+    double rawVal = raw.toDouble();
+    int degrees = (int)(rawVal / 100); 
+    double minutes = rawVal - (degrees * 100);
+    
+    double result = degrees + (minutes / 60.0);
+
+    // Corregir signo según hemisferio
+    if (hemi == "S" || hemi == "W") {
+        result *= -1.0;
+    }
+    return result;
+}
+
+void Sim7600Modem::parseGpsData(String resp) {
+    // Ejemplo respuesta: +CGPSINFO: 3322.1234,S,07033.5678,W,251124,123456,10.0,...
+    // Si no hay señal devuelve: +CGPSINFO: ,,,,,,,,
+    
+    int idxStart = resp.indexOf("+CGPSINFO: ");
+    if (idxStart == -1) return;
+    
+    String data = resp.substring(idxStart + 11); // Quitar encabezado
+    
+    // Parseo manual por comas
+    int firstComma = data.indexOf(',');
+    if (firstComma == 0) {
+        logger.log(LOG_DEBUG, "GPS: Sin señal (Fix not available)");
+        return; // Datos vacíos
+    }
+
+    // LATITUD
+    String latRaw = data.substring(0, firstComma);
+    int secondComma = data.indexOf(',', firstComma + 1);
+    String latHemi = data.substring(firstComma + 1, secondComma);
+    
+    // LONGITUD
+    int thirdComma = data.indexOf(',', secondComma + 1);
+    String lonRaw = data.substring(secondComma + 1, thirdComma);
+    int fourthComma = data.indexOf(',', thirdComma + 1);
+    String lonHemi = data.substring(thirdComma + 1, fourthComma);
+    
+    // CONVERSIÓN
+    double finalLat = convertToDecimal(latRaw, latHemi);
+    double finalLon = convertToDecimal(lonRaw, lonHemi);
+
+    if (finalLat != 0.0 && finalLon != 0.0) {
+        logger.log(LOG_INFO, "GPS SIM7600: Lat=%.6f Lon=%.6f", finalLat, finalLon);
+        
+        // ENVIAR AL MEASUREMENT MANAGER
+        // Asegúrate de incluir "business/MeasurementManager.hpp" arriba en el .cpp
+        MeasurementManager::instance().addMeasurement(MEAS_GPS_LAT, (float)finalLat);
+        MeasurementManager::instance().addMeasurement(MEAS_GPS_LON, (float)finalLon);
+        
+        // Opcional: Podrías parsear velocidad también si sigues la cadena de comas
+    }
 }

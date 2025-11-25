@@ -13,7 +13,6 @@ TempSensor    tempSensor(PIN_SENSOR_TEMP, config.input.temp_sensor);
 BatterySensor batterySensor(PIN_BATTERY_ADC, config.input.bat_sensor);
 
 Sim7600Modem  modem(simSerial, SIM_RX, SIM_TX, config.general.telefono_destino.c_str(), config.output.modem);
-GpsUblox      gpsSensor(gpsSerial, GPS_RX, GPS_TX);
 //BatterySensorAdapter batteryInput(batterySensor);
 
 
@@ -30,7 +29,6 @@ void setup() {
     auto sms_sender = std::unique_ptr<SmsSender>(new SmsSender(modem));
     AlertDispatcher::instance().addSender(std::move(sms_sender));
     SDStorage::instance().init(config.output.sd);
-    gpsSensor.init(); 
 
     Watchdog& watchdog = Watchdog::instance();
     const auto& wd_rules_config = config.business.watchdog; // Alias para legibilidad
@@ -103,7 +101,6 @@ void loop() {
     poxSensor.update(now);
     tempSensor.update(now);
     batterySensor.update(now);
-    gpsSensor.update(now);
     
     modem.update(now);
 

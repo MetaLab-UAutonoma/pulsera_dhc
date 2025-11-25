@@ -16,6 +16,7 @@ public:
         APAGADO,
         WAITING_BOOT,
         ESPERAR_RESP,
+        ESPERAR_RESP_GPS,
         ANALIZAR_RESP,
     };
     
@@ -49,7 +50,11 @@ private:
     bool            modemActivo_;
     uint32_t        tsModem_;
     uint32_t        tsModemCmd_;
+    uint32_t        lastGpsPoll_ = 0;       // Última vez que pedimos GPS
+    const uint32_t  gpsInterval_ = 10000; // Pedir GPS cada 10 segundos
     String          modemResp_;
     State           state_;
     const char* stateToString(State p_state);
+    void parseGpsData(String resp);
+    double convertToDecimal(String raw, String hemi); // Para convertir formato NMEA a Decimal
 };
