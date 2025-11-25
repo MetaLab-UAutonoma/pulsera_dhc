@@ -40,8 +40,7 @@ void Sim7600Modem::init() {
     
     delay(1000);
     // COMANDO IMPORTANTE: Encender el motor GPS
-    serial_.println("AT+CGPS=1"); 
-    logger.log(LOG_INFO, "SIM7600: Enviado comando de encendido GPS (AT+CGPS=1)");
+
     
     tsModem_ = millis();
     state_ = State::WAITING_BOOT;
@@ -99,13 +98,17 @@ void Sim7600Modem::update(uint32_t p_now) {
                 modemResp_ += char(serial_.read());
             }
 
-            if (modemResp_.indexOf("+CGPSINFO:") != -1 && modemResp_.endsWith("\n")) {
-                parseGpsData(modemResp_);
-                state_ = State::APAGADO; // Volvemos a reposo
-                tsModem_ = p_now;        // Reseteamos timer general para no chocar
+            if (modemResp_.indexOf("ERROR") != -1) {
+                 logger.log(LOG_WARN, "GPS devolvió ERROR (¿Aún apagado?)");
+                 state_ = State::APAGADO;
+                 tsModem_ = p_now;
             }
             // Timeout de seguridad (2 seg)
             if (p_now - tsModemCmd_ >= 2000) {
+                logger.log(LOG_WARN, "Timeout esperando GPS");
+                state_ = State::APAGADO;
+            }
+            if (p_now - tsModemCmd_ >= 3000) { // Dale 3 segundos
                 logger.log(LOG_WARN, "Timeout esperando GPS");
                 state_ = State::APAGADO;
             }
@@ -114,8 +117,21 @@ void Sim7600Modem::update(uint32_t p_now) {
         case State::ANALIZAR_RESP:
             logger.log(LOG_DEBUG, "RESP=\"%s\"", modemResp_.c_str());
             modemActivo_ = (modemResp_.indexOf("OK") != -1);
-            logger.log(modemActivo_ ? LOG_INFO : LOG_WARN,
-                       "%s SIM7600", modemActivo_ ? "activo." : "no detectado.");
+            
+            if (modemActivo_) {
+                logger.log(LOG_INFO, "SIM7600 activo.");
+                
+                // --- NUEVA LÓGICA: Encender GPS aquí ---
+                if (!gpsStarted_) {
+                    serial_.println("AT+CGPS=1");
+                    logger.log(LOG_INFO, "SIM7600: Activando motor GPS ahora que el módem responde.");
+                    gpsStarted_ = true; // Marcamos para no enviarlo mil veces
+                }
+                // ---------------------------------------
+            } else {
+                logger.log(LOG_WARN, "SIM7600 no detectado.");
+            }
+
             tsModem_ = p_now;
             state_ = State::APAGADO;
             break;

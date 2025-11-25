@@ -48,6 +48,7 @@ private:
     int             txPin_;
     const char*     telefonoDestino_;
     bool            modemActivo_;
+    bool            gpsStarted_ = false;
     uint32_t        tsModem_;
     uint32_t        tsModemCmd_;
     uint32_t        lastGpsPoll_ = 0;       // Última vez que pedimos GPS
