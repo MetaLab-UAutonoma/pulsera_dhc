@@ -1,12 +1,13 @@
-// input/sensor_temp.hpp
 #pragma once
 #include <Arduino.h>
 #include "config.hpp"
-#include "config/AppConfig.hpp" // Para tener la struct
+#include "config/AppConfig.hpp"
 #include "utils/logger.hpp"
 #include "input/Sensor.hpp"
-#include <DHT.h> // <-- NUEVO
-#define DHTTYPE DHT11 // Define el modelo que tienes (DHT11 o DHT22)
+
+// --- CAMBIO: Librerías para DS18B20 ---
+#include <OneWire.h>
+#include <DallasTemperature.h>
 
 class TempSensor : public Sensor {
 public:
@@ -23,15 +24,10 @@ private:
     uint32_t      tsWaitingTemp_;
     uint32_t      tsRetry_ = 0;
     uint32_t      tsLeerTemp_;
-    float         sumTemp_;
-    int           countTemp_;
+    float         lastReadTemp_ = 0.0f; 
     State         state_;
-    bool          alertT_;
-    DHT           dht_; 
 
+    // --- CAMBIO: Objetos para DS18B20 ---
+    OneWire oneWire_;
+    DallasTemperature sensors_;
 };
-    /*float         tempMin_;
-    float         tempMax_;
-    
-};
-*/
