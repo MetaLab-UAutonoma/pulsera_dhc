@@ -23,7 +23,7 @@ void setup() {
     logger.init(config.ntp.server.c_str(), config.ntp.gmt_offset_sec, config.ntp.daylight_offset_sec);
 
     pinMode(DEBUG_PIN, INPUT);
-    Wire.begin();
+    Wire.begin(32, 33);
     analogReadResolution(12); // <-- AÑADIR ESTA LÍNEA AQUÍ
     modem.init();
     auto sms_sender = std::unique_ptr<SmsSender>(new SmsSender(modem));

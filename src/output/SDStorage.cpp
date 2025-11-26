@@ -15,7 +15,7 @@ bool SDStorage::init(const SDConfig& config) {
         logger.log(LOG_INFO, "SD: Deshabilitada por configuración.");
         return false;
     }
-    SPI.begin(18, 19, 23, config.cs_pin);
+    SPI.begin(18, 19, 23, 13 );
     
     if (!SD.begin(config.cs_pin, SPI)) {
         logger.log(LOG_ERROR, "SD: Falló inicialización (Card Mount Failed).");
