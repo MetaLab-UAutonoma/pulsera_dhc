@@ -20,6 +20,7 @@ TempSensor::TempSensor(int p_pinSensor, const TempSensorConfig& config)
 {}
 
 void TempSensor::init() {
+    dht_.begin();
     active_ = true;
 }
 
