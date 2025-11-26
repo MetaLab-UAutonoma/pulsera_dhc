@@ -36,6 +36,7 @@ void TempSensor::update(uint32_t now) {
                 lastReadTemp  = 0; // Reiniciamos la lectura
                 sumTemp_      = 0;
                 countTemp_    = 0;
+                tsRetry_      = 0;
                 state_        = State::WAITING;
             }
             break;
@@ -50,7 +51,8 @@ void TempSensor::update(uint32_t now) {
         
         case State::LEYENDO:
             // Solo necesitamos una lectura en este estado
-            if (active_ && lastReadTemp == 0) { 
+            if (active_ && lastReadTemp == 0 && (now - tsRetry_ >= 2000)) {
+                tsRetry_    = now; 
                 tsLeerTemp_ = now;
                 float t = dht_.readTemperature(); // <-- LECTURA DIGITAL DHT
                 
@@ -58,7 +60,7 @@ void TempSensor::update(uint32_t now) {
                     logger.log(LOG_WARN, "Fallo al leer del sensor DHT. Retentando...");
                 } else {
                     lastReadTemp = t; 
-                    logger.log(LOG_DEBUG, "read t=%.2f", lastReadTemp);
+                    logger.log(LOG_DEBUG, "Lectura DHT Exitosa %.2f C", lastReadTemp);
                 }
             }
             

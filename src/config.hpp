@@ -2,7 +2,7 @@
 #include <Arduino.h>
 
 // ——— Pines y UART ———
-#define PIN_SENSOR_TEMP 34
+#define PIN_SENSOR_TEMP 27
 #define SIM_TX          17
 #define SIM_RX          16
 #define DEBUG_PIN       25

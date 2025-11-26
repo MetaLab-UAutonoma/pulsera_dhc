@@ -21,6 +21,7 @@ private:
     bool          active_;
     uint32_t      tsTemp_;
     uint32_t      tsWaitingTemp_;
+    uint32_t      tsRetry_ = 0;
     uint32_t      tsLeerTemp_;
     float         sumTemp_;
     int           countTemp_;
