@@ -31,7 +31,7 @@
     
     "SD": {
       "enabled": true,
-      "cs_pin": 5
+      "cs_pin": 13
     }
   },
   "business": {
