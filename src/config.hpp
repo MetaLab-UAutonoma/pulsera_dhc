@@ -14,6 +14,18 @@
 extern HardwareSerial simSerial;
 extern HardwareSerial gpsSerial;
 
+// --- Pines para Módulo LoRa (¡ADAPTAR A TU DISEÑO PCB FINAL!) ---
+#define LORA_CS         18  // Chip Select (NSS)
+#define LORA_RST        14  // Reset
+#define LORA_DIO0       26  // Pin de Interrupción (DIO0)
+#define LORA_SCK        5   // Clock
+#define LORA_MISO       19  // Master In Slave Out
+#define LORA_MOSI       27  // Master Out Slave In
+// -----------------------------------------------------------------
+
+extern HardwareSerial simSerial;
+extern HardwareSerial gpsSerial;
+
 // Conversión a milisegundos
 #define SEG_A_MS(x) ((uint32_t)((x) * 1000UL))
 

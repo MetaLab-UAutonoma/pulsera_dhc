@@ -26,6 +26,7 @@ public:
      *  - SpO2
      *  - Batería (% y voltaje)
      */
+    
     static String buildSMS(const MeasurementManager& mm);
 
     /**
@@ -33,4 +34,6 @@ public:
      * Este mensaje sirve para HTTP POST u otras integraciones.
      */
     static String buildJSON(const MeasurementManager& mm);
+
+    static size_t buildLoRaPayload(const MeasurementManager& mm, uint8_t* payloadBuffer); // <-- NUEVO
 };
