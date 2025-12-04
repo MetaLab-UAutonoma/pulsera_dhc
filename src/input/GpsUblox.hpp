@@ -1,4 +1,4 @@
-/*#pragma once
+#pragma once
 #include <Arduino.h>
 #include <TinyGPSPlus.h>
 
@@ -46,4 +46,3 @@ private:
 
     void processGpsData();
 };
-*/

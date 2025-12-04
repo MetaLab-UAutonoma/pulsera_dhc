@@ -1,4 +1,4 @@
-/*#include "GpsUblox.hpp"
+#include "GpsUblox.hpp"
 #include "business/MeasurementManager.hpp" 
 
 GpsUblox::GpsUblox(HardwareSerial& serial, int rxPin, int txPin, uint32_t baud)
@@ -68,4 +68,3 @@ void GpsUblox::processGpsData() {
         mm.addMeasurement(MEAS_GPS_SPEED, speed_);
     }
 }
-*/

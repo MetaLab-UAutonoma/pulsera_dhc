@@ -121,7 +121,7 @@ void Sim7600Modem::update(uint32_t p_now) {
                 state_ = State::APAGADO;
                 tsModem_ = p_now;
             }
-            break;
+            break; 
             // Timeout de seguridad (2 seg)
             if (p_now - tsModemCmd_ >= 2000) {
                 logger.log(LOG_WARN, "Timeout esperando GPS");
