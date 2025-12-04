@@ -103,6 +103,25 @@ void Sim7600Modem::update(uint32_t p_now) {
                  state_ = State::APAGADO;
                  tsModem_ = p_now;
             }
+            // Si el tiempo de espera se cumple, o la respuesta ya contiene el fin de línea
+            if (p_now - tsModemCmd_ >= 3000 || modemResp_.endsWith("\n")) { 
+                
+                // *** 🔑 CÓDIGO FALTANTE: RECEPCIÓN Y TRANSFORMACIÓN DEL DATO ***
+                if (modemResp_.indexOf("+CGPSINFO:") != -1 && modemResp_.indexOf("ERROR") == -1) {
+                    logger.log(LOG_DEBUG, "GPS: Respuesta completa. Analizando datos...");
+                    parseGpsData(modemResp_); // <--- ¡Esta es la llamada a la transformación!
+                } else if (modemResp_.indexOf("+CGPSINFO: ,,,,,,,,") != -1) {
+                    logger.log(LOG_INFO, "GPS: Sin Fix (datos vacíos).");
+                    MeasurementManager::instance().addMeasurement(MEAS_GPS_SATS, 0.0f);
+                } else {
+                    logger.log(LOG_WARN, "GPS: Timeout o respuesta inesperada.");
+                }
+                // ***************************************************************
+                
+                state_ = State::APAGADO;
+                tsModem_ = p_now;
+            }
+            break;
             // Timeout de seguridad (2 seg)
             if (p_now - tsModemCmd_ >= 2000) {
                 logger.log(LOG_WARN, "Timeout esperando GPS");
