@@ -1,7 +1,7 @@
 // main.cpp
 #include "main.hpp"
 #include "output/SDStorage.hpp"
-
+#include "input/GpsUblox.hpp"
 
 //bool a = ConfigManager::instance().loadFromFile("/config/config.json");
 const AppConfig& config = ConfigManager::instance().getConfig();
@@ -12,6 +12,7 @@ PulseOximeter pox;                                           // Para PoxSensor
 PoxMax30100Sensor poxSensor(pox, config.input.pox_sensor);
 TempSensor    tempSensor(PIN_SENSOR_TEMP, config.input.temp_sensor);
 BatterySensor batterySensor(PIN_BATTERY_ADC, config.input.bat_sensor);
+GpsUblox gpsSensor(gpsSerial, GPS_RX_PIN, GPS_TX_PIN, GPS_BAUD);
 
 Sim7600Modem  modem(simSerial, SIM_RX, SIM_TX, config.general.telefono_destino.c_str(), config.output.modem);
 //BatterySensorAdapter batteryInput(batterySensor);
@@ -25,7 +26,8 @@ void setup() {
 
     pinMode(DEBUG_PIN, INPUT);
     Wire.begin(32, 33);
-    analogReadResolution(12); // <-- AÑADIR ESTA LÍNEA AQUÍ
+    analogReadResolution(12); 
+    gpsSensor.init();
     modem.init();
     auto sms_sender = std::unique_ptr<SmsSender>(new SmsSender(modem));
     AlertDispatcher::instance().addSender(std::move(sms_sender));
@@ -65,6 +67,9 @@ void setup() {
     );
     watchdog.addRule(MEAS_BATTERY_PERCENT, std::move(battery_rule));
     MeasurementManager::instance().configure(MEAS_BATTERY_VOLTAGE, 60, 3600);
+    MeasurementManager::instance().configure(MEAS_GPS_LAT, 5, 3600);
+    MeasurementManager::instance().configure(MEAS_GPS_LON, 5, 3600);
+    MeasurementManager::instance().configure(MEAS_GPS_SPEED, 5, 3600);
 
 
     // Crear Regla de BPM
@@ -86,13 +91,14 @@ void setup() {
         wd_rules_config.gps_rule.hist_age_sec
     );
     watchdog.addRule(MEAS_GPS_SATS, std::move(gps_rule));
-    
+   
 
     logger.log(LOG_INFO, "== Sistema iniciado ==");
 }
 
 void loop() {
     uint32_t now = millis();
+    
 
     debugMode = (digitalRead(DEBUG_PIN) == HIGH);
     if (debugMode != lastDebugMode) {
@@ -100,13 +106,11 @@ void loop() {
         lastDebugMode = debugMode;
     }
 
-    // Delego la lógica a los módulos POO
-    poxSensor.update(now);
-    tempSensor.update(now);
-    batterySensor.update(now);
-    
-    modem.update(now);
-    os_runloop_once(); // LMIC ejecuta su estado en cada ciclo
+    poxSensor.update           (now);
+    tempSensor.update          (now);
+    batterySensor.update       (now);
+    gpsSensor.update           (now);    
+    modem.update               (now);
 
     Watchdog::instance().update(now);
 }

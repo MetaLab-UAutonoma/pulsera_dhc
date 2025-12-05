@@ -47,7 +47,6 @@ void Sim7600Modem::init() {
 
 }
 
-// CORRECCIÓN 1: Agregar corchetes {}
 bool Sim7600Modem::isActive() const {
     return modemActivo_;
 }
@@ -64,14 +63,14 @@ void Sim7600Modem::update(uint32_t p_now) {
                 modemResp_ = "";
                 state_ = State::ESPERAR_RESP;
             }
-            else if (modemActivo_ && (p_now - lastGpsPoll_ >= gpsInterval_)) {
+            /*else if (modemActivo_ && (p_now - lastGpsPoll_ >= gpsInterval_)) {
                 logger.log(LOG_DEBUG, "Solicitando coordenadas GPS...");
                 serial_.println("AT+CGPSINFO"); // Comando para pedir info
                 tsModemCmd_ = p_now;
                 modemResp_ = "";
                 state_ = State::ESPERAR_RESP_GPS; // Vamos al nuevo estado
                 lastGpsPoll_ = p_now;
-            }
+            }*/
             break;
         case State::WAITING_BOOT: // <-- [3] NUEVO ESTADO
             // Espera CRÍTICA de 30 segundos (o más, 30s es un buen mínimo)
