@@ -42,8 +42,10 @@ void GpsUblox::processGpsData() {
         hasFix_ = true;
         lat_ = gps_.location.lat();
         lon_ = gps_.location.lng();
+        logger.log(LOG_INFO, "GPS FIX: Lat=%.6f, Lon=%.6f, Sats=%d", lat_, lon_, gps_.satellites.value());
         mm.addMeasurement(MEAS_GPS_LAT, lat_);
         mm.addMeasurement(MEAS_GPS_LON, lon_);
+
     } else {
         hasFix_ = false;
         lat_ = 0.0;
