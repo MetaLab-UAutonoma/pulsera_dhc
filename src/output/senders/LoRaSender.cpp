@@ -12,13 +12,17 @@ extern "C" {
     // No incluir hal.h aquí, ya que main.hpp lo hace
 }
 
+// AÑADIR: Puntero global a la instancia activa
+static LoRaSender* g_lora_sender_instance = nullptr;
+
 // =======================================================
 // Declaraciones de Eventos
 // =======================================================
 // La función onEvent debe ser global
 void onEvent (ev_t ev) { // Usamos el alias de tipo 'ev_t' para compatibilidad C++
     // CORRECCIÓN 1: Usar 'client' en lugar de 'clientData' (resuelve error de struct)
-    LoRaSender* sender = new LoRaSender();
+   LoRaSender* sender = g_lora_sender_instance; // Usar el puntero global
+   
 
     switch(ev) {
         case EV_JOINING:
@@ -43,6 +47,8 @@ void onEvent (ev_t ev) { // Usamos el alias de tipo 'ev_t' para compatibilidad C
 // =======================================================
 
 LoRaSender::LoRaSender() {
+    // AÑADIR: Guardar el puntero a esta instancia
+    g_lora_sender_instance = this;
 }
 LoRaSender::LoRaSender(lmic_client_data_t _cliente) {
     // CORRECCIÓN 2: Usar 'client' para guardar el puntero de la instancia

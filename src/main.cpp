@@ -2,6 +2,7 @@
 #include "main.hpp"
 #include "output/SDStorage.hpp"
 
+
 //bool a = ConfigManager::instance().loadFromFile("/config/config.json");
 const AppConfig& config = ConfigManager::instance().getConfig();
 
@@ -28,6 +29,8 @@ void setup() {
     modem.init();
     auto sms_sender = std::unique_ptr<SmsSender>(new SmsSender(modem));
     AlertDispatcher::instance().addSender(std::move(sms_sender));
+    auto lora_sender = std::make_unique<LoRaSender>();
+    lora_sender->init(); // Inicializa la pila LMIC y comienza la unión
     SDStorage::instance().init(config.output.sd);
 
     Watchdog& watchdog = Watchdog::instance();
@@ -103,6 +106,36 @@ void loop() {
     batterySensor.update(now);
     
     modem.update(now);
+    os_runloop_once(); // LMIC ejecuta su estado en cada ciclo
 
     Watchdog::instance().update(now);
 }
+
+// Debemos incluir <lmic.h> para que los tipos (u1_t) sean conocidos
+#include <lmic.h> 
+// Necesitamos <Arduino.h> y <pgmspace.h> para memcpy_P
+#include <Arduino.h>
+#include <pgmspace.h>
+
+
+    // --- IMPLEMENTACIÓN DE GETTERS LORAWAN PARA LMIC (DEBE SER EN ENLACE C) ---
+    extern "C" {
+    
+    // Devuelve el Device EUI. La firma esperada es: void os_getDevEui (u1_t* buf)
+    void os_getDevEui (u1_t* buf) { 
+        // Usamos memcpy_P para copiar desde la memoria de programa (flash) a RAM (buf)
+        memcpy_P(buf, LORA_DEVEUI, 8); 
+    }
+
+    // Devuelve el AppEUI.
+    void os_getArtEui (u1_t* buf) { 
+        memcpy_P(buf, LORA_APPEUI, 8); 
+    }
+
+    // Devuelve el AppKey.
+    void os_getAppKey (u1_t* buf) { 
+        memcpy_P(buf, LORA_APPKEY, 16);
+    }
+}
+ 
+
