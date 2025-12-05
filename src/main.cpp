@@ -2,7 +2,10 @@
 #include "main.hpp"
 #include "output/SDStorage.hpp"
 #include "input/GpsUblox.hpp"
-
+#include "hal/hal.h"
+#include <lmic.h> 
+#include <Arduino.h>
+#include <pgmspace.h>
 //bool a = ConfigManager::instance().loadFromFile("/config/config.json");
 const AppConfig& config = ConfigManager::instance().getConfig();
 
@@ -16,7 +19,12 @@ GpsUblox gpsSensor(gpsSerial, GPS_RX_PIN, GPS_TX_PIN, GPS_BAUD);
 
 Sim7600Modem  modem(simSerial, SIM_RX, SIM_TX, config.general.telefono_destino.c_str(), config.output.modem);
 //BatterySensorAdapter batteryInput(batterySensor);
-
+ const lmic_pinmap lmic_pins = {
+    .nss = LORA_CS,
+    .rxtx = LMIC_UNUSED_PIN,
+    .rst = LORA_RST,
+    .dio = {LORA_DIO0, LMIC_UNUSED_PIN, LMIC_UNUSED_PIN},
+};
 
 void setup() {
     Serial.begin(115200);
@@ -116,30 +124,20 @@ void loop() {
 }
 
 // Debemos incluir <lmic.h> para que los tipos (u1_t) sean conocidos
-#include <lmic.h> 
-// Necesitamos <Arduino.h> y <pgmspace.h> para memcpy_P
-#include <Arduino.h>
-#include <pgmspace.h>
+
 
 
     // --- IMPLEMENTACIÓN DE GETTERS LORAWAN PARA LMIC (DEBE SER EN ENLACE C) ---
-    extern "C" {
-    
-    // Devuelve el Device EUI. La firma esperada es: void os_getDevEui (u1_t* buf)
+   extern "C" {
     void os_getDevEui (u1_t* buf) { 
-        // Usamos memcpy_P para copiar desde la memoria de programa (flash) a RAM (buf)
         memcpy_P(buf, LORA_DEVEUI, 8); 
     }
-
-    // Devuelve el AppEUI.
     void os_getArtEui (u1_t* buf) { 
         memcpy_P(buf, LORA_APPEUI, 8); 
     }
-
-    // Devuelve el AppKey.
-    void os_getAppKey (u1_t* buf) { 
+    void os_getDevKey (u1_t* buf) { 
         memcpy_P(buf, LORA_APPKEY, 16);
     }
 }
- 
+
 
